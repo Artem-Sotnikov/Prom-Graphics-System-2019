@@ -16,7 +16,8 @@ public class FloorPlan extends JFrame {
 		this.disp = new Display();
 	}
 	
-	public static void main(String[] args) {
+	public void displayFloorPlan() {
+		
 	}
 
 	private class Display extends JPanel {
