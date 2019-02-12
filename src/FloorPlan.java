@@ -14,10 +14,7 @@ public class FloorPlan extends JFrame {
 	public FloorPlan() {
 		super("Floor Plan");
 		this.disp = new Display();
-	}
-	
-	public static void main(String[] args) {
-	}
+	}	
 
 	private class Display extends JPanel {
 		private static final long serialVersionUID = 1L;
