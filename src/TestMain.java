@@ -5,5 +5,8 @@ public class TestMain {
 	
 	public static void main(String[] args) {
 		window = new FloorPlan();
+		while (true) {
+			((FloorPlan) window).displayFloorPlan();
+		}
 	}
 }
