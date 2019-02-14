@@ -72,7 +72,6 @@ public class FloorPlan extends JFrame {
 			tableShapes.add(tableCreation);
 
 			for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
-
 				DispStudent studentCreation = new DispStudent();
 
 				String temp = tables.get(i).getStudents().get(j).getName();
@@ -89,7 +88,6 @@ public class FloorPlan extends JFrame {
 
 				studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
 				studentShapes.add(studentCreation);
-
 			}
 
 		}
@@ -106,7 +104,6 @@ public class FloorPlan extends JFrame {
 
 		//temporary, do not use in final version
 		LoadFile() {}
-
 	}
 
 	private LoadFile loadShapes() {  
@@ -129,7 +126,6 @@ public class FloorPlan extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		private UIState state;
-
 		private MyMouseListener mouseListener;
 
 		public Display() {
@@ -143,7 +139,6 @@ public class FloorPlan extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			setDoubleBuffered(true);
-
 
 			for (int i = 0; i < studentShapes.size(); i++) {
 				studentShapes.get(i).draw(g, Color.BLUE);    
@@ -163,7 +158,7 @@ public class FloorPlan extends JFrame {
 			}
 
 			Point mousePos = this.mouseListener.getPos();
-			//   if (square.getBoundingBox().contains(mousePos)) {
+			
 			for (int i = 0; i < studentShapes.size(); i++) {
 				if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
 
@@ -260,6 +255,14 @@ public class FloorPlan extends JFrame {
 		}
 
 		@Override
+		public void mousePressed(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+		}
+		
+		@Override
 		public void mouseMoved(MouseEvent e) {
 			x = e.getX();
 			y = e.getY();
@@ -267,14 +270,6 @@ public class FloorPlan extends JFrame {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-		}
-
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
 		}
 		
 		public Point getClick() {
