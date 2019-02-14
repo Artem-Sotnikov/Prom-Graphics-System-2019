@@ -25,8 +25,8 @@ public class FloorPlan extends JFrame {
 		this.add(this.disp);
 		this.setSize(1000,1000);
 		
-		this.square = new Square(100, 100, 50, 50);
-		this.info = new Square(150, 50, 80, 50);
+		this.square = new Square(100, 100, 50, 50, Color.MAGENTA);
+		this.info = new Info(150, 50, 80, 50, Color.GRAY, "Hello there.");
 		
 		this.requestFocusInWindow();
 		this.setVisible(true);
@@ -106,10 +106,12 @@ public class FloorPlan extends JFrame {
 	private abstract class Shape {
 		private double x;
 		private double y;
+		private Color color;
 		
-		public Shape(double x, double y) {
+		public Shape(double x, double y, Color color) {
 			this.x = x;
 			this.y = y;
+			this.color = color;
 		}
 
 		/**
@@ -126,6 +128,13 @@ public class FloorPlan extends JFrame {
 			return y;
 		}
 		
+		/**
+		 * @return the color
+		 */
+		public Color getColor() {
+			return color;
+		}
+		
 		public abstract void draw(Graphics g);
 		
 		public abstract Rectangle getBoundingBox();
@@ -135,21 +144,52 @@ public class FloorPlan extends JFrame {
 		private double width;
 		private double height;
 		
-		public Square(double x, double y, double width, double height) {
-			super(x, y);
+		public Square(double x, double y, double width, double height, Color color) {
+			super(x, y, color);
 			this.width = width;
 			this.height = height;
 		}
 		
 		@Override
 		public void draw(Graphics g) {
-			g.setColor(Color.BLUE);
+			g.setColor(this.getColor());
 			g.fillRect((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
 		}
 
 		@Override
 		public Rectangle getBoundingBox() {
 			return new Rectangle((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
+		}
+
+		/**
+		 * @return the width
+		 */
+		public double getWidth() {
+			return width;
+		}
+
+		/**
+		 * @return the height
+		 */
+		public double getHeight() {
+			return height;
+		}
+	}
+	
+	private class Info extends Square {
+		private String text;
+		
+		public Info(double x, double y, double width, double height, Color color, String text) {
+			super(x, y, width, height, color);
+			this.text = text;
+		}
+		
+		@Override
+		public void draw(Graphics g) {
+			g.setColor(this.getColor());
+			g.fillRect((int)this.getX(), (int)this.getY(), (int)this.getWidth(), (int)this.getHeight());
+			g.setColor(Color.WHITE);
+			g.drawString(text, (int)this.getX(), (int)this.getY() + (int)this.getHeight()/2);
 		}
 	}
 	
