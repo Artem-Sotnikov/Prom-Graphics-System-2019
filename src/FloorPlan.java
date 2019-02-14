@@ -21,10 +21,6 @@ public class FloorPlan extends JFrame {
 	private ArrayList<DispStudent> studentShapes;
 	private ArrayList<Shape> uiShapes;
 
-	// private ArrayList<Table> tables;
-	// private Shape square;
-	// private Shape info;
-
 	final Color IP_PURPLE = new Color(135,128,184);
 	final Color LIGHT_GRAY = new Color(196,196,196);
 	final int SCALE_FACTOR = 20;
@@ -40,16 +36,12 @@ public class FloorPlan extends JFrame {
 		this.add(this.disp);
 		this.setSize(1000,1000);
 
-		//  this.square = new DispRectangle(100, 100, 50, 50);
-		//  this.info = new DispRectangle(150, 50, 80, 50);
-
 		this.requestFocusInWindow();
 		this.setVisible(true);
 
 		this.tableShapes = new ArrayList<DispRectangle>(0);
 		this.studentShapes = new ArrayList<DispStudent>(0);
 		this.uiShapes = new ArrayList<Shape>(0);
-
 	}
 
 	public void generateFloorPlan(ArrayList<Table> tables) {
@@ -62,11 +54,9 @@ public class FloorPlan extends JFrame {
 			tableCreation.setHeight(2*SCALE_FACTOR);
 			tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
 
-
 			if (i == 0) {
 				determinedX = 100;
 				determinedY = 100;
-				//System.out.println("initial active");
 			} else {
 				determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 				determinedY = tableShapes.get(i - 1).getY();
@@ -109,7 +99,7 @@ public class FloorPlan extends JFrame {
 		public ArrayList<DispRectangle> tableList;
 		public ArrayList<DispCircle> studentList;
 
-		LoadFile(ArrayList<DispRectangle> tableL,ArrayList<DispCircle> studentL) {
+		LoadFile(ArrayList<DispRectangle> tableL, ArrayList<DispCircle> studentL) {
 			this.studentList = studentL;
 			this.tableList = tableL;
 		}
@@ -156,7 +146,7 @@ public class FloorPlan extends JFrame {
 
 
 			for (int i = 0; i < studentShapes.size(); i++) {
-				studentShapes.get(i).draw(g,Color.BLUE);    
+				studentShapes.get(i).draw(g, Color.BLUE);    
 			}
 
 			for (int i = 0; i < tableShapes.size(); i++) {
@@ -174,10 +164,6 @@ public class FloorPlan extends JFrame {
 
 			Point mousePos = this.mouseListener.getPos();
 			//   if (square.getBoundingBox().contains(mousePos)) {
-			//    info.draw(g, Color.GREEN);
-			//   }
-			//   square.draw(g, Color.RED);
-			//   
 			for (int i = 0; i < studentShapes.size(); i++) {
 				if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
 
@@ -283,14 +269,6 @@ public class FloorPlan extends JFrame {
 		public void mouseDragged(MouseEvent e) {
 		}
 
-		public Point getPos() {
-			return new Point(x, y);
-		}
-
-		public Point getClick() {
-			return new Point(clickX,clickY);
-		}
-
 		@Override
 		public void mousePressed(MouseEvent arg0) {
 		}
@@ -298,98 +276,13 @@ public class FloorPlan extends JFrame {
 		@Override
 		public void mouseReleased(MouseEvent arg0) {
 		}
-		public Point getPos() {
-			return new Point(x, y);
-		}
-	}
-
-	private abstract class Shape {
-		private double x;
-		private double y;
-		private Color color;
-
-		public Shape(double x, double y, Color color) {
-			this.x = x;
-			this.y = y;
-			this.color = color;
-		}
-
-		/**
-		 * @return the x
-		 */
-		public double getX() {
-			return x;
+		
+		public Point getClick() {
+			return new Point(clickX, clickY);
 		}
 		
-		/**
-		 * @return the y
-		 */
-		public double getY() {
-			return y;
-		}
-
-		/**
-		 * @return the color
-		 */
-		public Color getColor() {
-			return color;
-		}
-
-		public abstract void draw(Graphics g);
-
-		public abstract Rectangle getBoundingBox();
-	}
-
-	private class Square extends Shape {
-		private double width;
-		private double height;
-
-		public Square(double x, double y, double width, double height, Color color) {
-			super(x, y, color);
-			this.width = width;
-			this.height = height;
-		}
-
-		@Override
-		public void draw(Graphics g) {
-			g.setColor(this.getColor());
-			g.fillRect((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
-		}
-
-		@Override
-		public Rectangle getBoundingBox() {
-			return new Rectangle((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
-		}
-
-		/**
-		 * @return the width
-		 */
-		public double getWidth() {
-			return width;
-		}
-
-		/**
-		 * @return the height
-		 */
-		public double getHeight() {
-			return height;
-		}
-	}
-
-	private class Info extends Square {
-		private String text;
-
-		public Info(double x, double y, double width, double height, Color color, String text) {
-			super(x, y, width, height, color);
-			this.text = text;
-		}
-
-		@Override
-		public void draw(Graphics g) {
-			g.setColor(this.getColor());
-			g.fillRect((int)this.getX(), (int)this.getY(), (int)this.getWidth(), (int)this.getHeight());
-			g.setColor(Color.WHITE);
-			g.drawString(text, (int)this.getX(), (int)this.getY() + (int)this.getHeight()/2);
+		public Point getPos() {
+			return new Point(x, y);
 		}
 	}
 

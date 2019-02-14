@@ -1,4 +1,3 @@
-
 public class DispStudent extends DispCircle {
 	private Student originalStudent;
 	

@@ -1,4 +1,3 @@
-
 public enum UIState {
 	STATE_VIEWING,STATE_STUDENT_SELECTED
 }
