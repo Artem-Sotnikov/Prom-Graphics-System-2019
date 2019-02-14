@@ -17,8 +17,8 @@ public class FloorPlan extends JFrame {
  private static final long serialVersionUID = 1L;
  
  private Display disp;
- private ArrayList<Square> tableShapes;
- private ArrayList<Circle> studentShapes;
+ private ArrayList<GraphicTable> tableShapes;
+ private ArrayList<GraphicStudent> studentShapes;
  
  // private ArrayList<Table> tables;
  private Shape square;
@@ -34,14 +34,14 @@ public class FloorPlan extends JFrame {
   this.add(this.disp);
   this.setSize(1000,1000);
   
-  this.square = new Square(100, 100, 50, 50);
-  this.info = new Square(150, 50, 80, 50);
+  this.square = new GraphicTable(100, 100, 50, 50);
+  this.info = new GraphicTable(150, 50, 80, 50);
   
   this.requestFocusInWindow();
   this.setVisible(true);
   
-  tableShapes = new ArrayList<Square>(0);
-  studentShapes = new ArrayList<Circle>(0);
+  tableShapes = new ArrayList<GraphicTable>(0);
+  studentShapes = new ArrayList<GraphicStudent>(0);
  }
  
  public void generateFloorPlan(ArrayList<Table> tables) {
@@ -52,7 +52,7 @@ public class FloorPlan extends JFrame {
   double determinedY = 0;
   
   for (int i = 0; i < tables.size(); i++) {
-   Square tableCreation = new Square();
+   GraphicTable tableCreation = new GraphicTable();
    tableCreation.setHeight(2*SCALE_FACTOR);
    tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
    
@@ -79,7 +79,7 @@ public class FloorPlan extends JFrame {
    
    for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
 	  
-	   Circle studentCreation = new Circle();
+	   GraphicStudent studentCreation = new GraphicStudent();
 	   
 	   String temp = tables.get(i).getStudents().get(j).getName();
 	   System.out.println(temp);
@@ -100,10 +100,10 @@ public class FloorPlan extends JFrame {
  }
  
  private class LoadFile {
-  public ArrayList<Square> tableList;
-  public ArrayList<Circle> studentList;
+  public ArrayList<GraphicTable> tableList;
+  public ArrayList<GraphicStudent> studentList;
   
-  LoadFile(ArrayList<Square> tableL,ArrayList<Circle> studentL) {
+  LoadFile(ArrayList<GraphicTable> tableL,ArrayList<GraphicStudent> studentL) {
    this.studentList = studentL;
    this.tableList = tableL;
   }
@@ -240,17 +240,17 @@ public class FloorPlan extends JFrame {
   public abstract Rectangle getBoundingBox();
  }
  
- private class Square extends Shape {
+ private class GraphicTable extends Shape {
   private double width;
   private double height;
   
-  public Square(double x, double y, double width, double height) {
+  public GraphicTable(double x, double y, double width, double height) {
    super(x, y);
    this.width = width;
    this.height = height;
   }
   
-  public Square() {};
+  public GraphicTable() {};
   
   public double getWidth() {
    return width;
@@ -282,16 +282,16 @@ public class FloorPlan extends JFrame {
   }
  }
  
- private class Circle extends Shape {
+ private class GraphicStudent extends Shape {
   private double radius;
   
-  public Circle(double x, double y, double rad) {
+  public GraphicStudent(double x, double y, double rad) {
    super(x, y);
    this.radius = rad;
    // TODO Auto-generated constructor stub
   }
   
-  public Circle() {};
+  public GraphicStudent() {};
   
   public double getRadius() {
    return this.radius;
