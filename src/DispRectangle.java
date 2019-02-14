@@ -2,17 +2,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-class GraphicTable extends Shape {
+class DispRectangle extends Shape {
   private double width;
   private double height;
   
-  public GraphicTable(double x, double y, double width, double height) {
+  public DispRectangle(double x, double y, double width, double height) {
    super(x, y);
    this.width = width;
    this.height = height;
   }
   
-  public GraphicTable() {};
+  public DispRectangle() {};
   
   public double getWidth() {
    return width;

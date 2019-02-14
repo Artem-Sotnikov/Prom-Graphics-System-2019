@@ -2,18 +2,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-class GraphicStudent extends Shape {
+class DispCircle extends Shape {
   private double radius;
-  private Student originalStudent;
   
 
-  public GraphicStudent(double x, double y, double rad) {
+  public DispCircle(double x, double y, double rad) {
    super(x, y);
    this.radius = rad;
    // TODO Auto-generated constructor stub
   }
   
-  public GraphicStudent() {};
+  public DispCircle() {};
   
   public double getRadius() {
    return this.radius;
@@ -23,13 +22,6 @@ class GraphicStudent extends Shape {
    this.radius = rad;
   }
   
-  public Student getOriginalStudent() {
-	return originalStudent;
-  }
-
-  public void setOriginalStudent(Student originalStudent) {
-	this.originalStudent = originalStudent;
-  }
   
   @Override
   public void draw(Graphics g, Color color) {

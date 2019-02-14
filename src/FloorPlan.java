@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -17,17 +18,21 @@ public class FloorPlan extends JFrame {
  private static final long serialVersionUID = 1L;
  
  private Display disp;
- private ArrayList<GraphicTable> tableShapes;
- private ArrayList<GraphicStudent> studentShapes;
+ private ArrayList<DispRectangle> tableShapes;
+ private ArrayList<DispStudent> studentShapes;
+ private ArrayList<Shape> uiShapes;
  
  // private ArrayList<Table> tables;
- private Shape square;
- private Shape info;
+// private Shape square;
+// private Shape info;
  
  final Color IP_PURPLE = new Color(135,128,184);
+ final Color LIGHT_GRAY = new Color(196,196,196);
  final int SCALE_FACTOR = 20;
  final int OFFSET_FACTOR = 5;
  
+ final DispRectangle backButton = new DispRectangle(10,10,100,40);
+		 
  public FloorPlan() {
   super("Floor Plan");
   this.disp = new Display();
@@ -36,14 +41,16 @@ public class FloorPlan extends JFrame {
   this.add(this.disp);
   this.setSize(1000,1000);
   
-  this.square = new GraphicTable(100, 100, 50, 50);
-  this.info = new GraphicTable(150, 50, 80, 50);
+//  this.square = new DispRectangle(100, 100, 50, 50);
+//  this.info = new DispRectangle(150, 50, 80, 50);
   
   this.requestFocusInWindow();
   this.setVisible(true);
   
-  tableShapes = new ArrayList<GraphicTable>(0);
-  studentShapes = new ArrayList<GraphicStudent>(0);
+  tableShapes = new ArrayList<DispRectangle>(0);
+  studentShapes = new ArrayList<DispStudent>(0);
+  uiShapes = new ArrayList<Shape>(0);
+    
  }
  
  public void generateFloorPlan(ArrayList<Table> tables) {
@@ -52,7 +59,7 @@ public class FloorPlan extends JFrame {
   double determinedY = 0;
   
   for (int i = 0; i < tables.size(); i++) {
-   GraphicTable tableCreation = new GraphicTable();
+   DispRectangle tableCreation = new DispRectangle();
    tableCreation.setHeight(2*SCALE_FACTOR);
    tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
    
@@ -64,7 +71,7 @@ public class FloorPlan extends JFrame {
    } else {
     determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
     determinedY = tableShapes.get(i - 1).getY();
-    if (determinedX > 900 - tableSize*SCALE_FACTOR) {
+    if (determinedX > 900 - tableSize*SCALE_FACTOR/2) {
      determinedX = 100;
      determinedY = determinedY + SCALE_FACTOR*6;
     }
@@ -79,7 +86,7 @@ public class FloorPlan extends JFrame {
    
    for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
 	  
-	   GraphicStudent studentCreation = new GraphicStudent();
+	   DispStudent studentCreation = new DispStudent();
 	   
 	   String temp = tables.get(i).getStudents().get(j).getName();
 	   System.out.println(temp);
@@ -102,10 +109,10 @@ public class FloorPlan extends JFrame {
  }
  
  private class LoadFile {
-  public ArrayList<GraphicTable> tableList;
-  public ArrayList<GraphicStudent> studentList;
+  public ArrayList<DispRectangle> tableList;
+  public ArrayList<DispCircle> studentList;
   
-  LoadFile(ArrayList<GraphicTable> tableL,ArrayList<GraphicStudent> studentL) {
+  LoadFile(ArrayList<DispRectangle> tableL,ArrayList<DispCircle> studentL) {
    this.studentList = studentL;
    this.tableList = tableL;
   }
@@ -130,9 +137,13 @@ public class FloorPlan extends JFrame {
  public void exit() {
   this.dispose();
  }
+ 
 
+ 
  private class Display extends JPanel {
   private static final long serialVersionUID = 1L;
+  
+  private UIState state;
   
   private MyMouseListener mouseListener;
   
@@ -140,11 +151,14 @@ public class FloorPlan extends JFrame {
    this.mouseListener = new MyMouseListener();
    this.addMouseListener(this.mouseListener);
    this.addMouseMotionListener(this.mouseListener);
+   this.setBackground(LIGHT_GRAY); 
+   this.state = UIState.STATE_VIEWING;
   }
   
   public void paintComponent(Graphics g) {
    super.paintComponent(g);
    setDoubleBuffered(true);
+       
    
    for (int i = 0; i < studentShapes.size(); i++) {
     studentShapes.get(i).draw(g,Color.BLUE);    
@@ -152,6 +166,15 @@ public class FloorPlan extends JFrame {
    
    for (int i = 0; i < tableShapes.size(); i++) {
     tableShapes.get(i).draw(g, IP_PURPLE);
+   }
+      
+   for (int i = 0; i < uiShapes.size(); i++) {
+	   uiShapes.get(i).draw(g, Color.YELLOW);
+   }
+	   
+   if (this.state == UIState.STATE_STUDENT_SELECTED) {
+	   g.setColor(Color.BLACK);
+	   g.drawString("BACK",25,25);
    }
    
    Point mousePos = this.mouseListener.getPos();
@@ -163,16 +186,23 @@ public class FloorPlan extends JFrame {
    for (int i = 0; i < studentShapes.size(); i++) {
 	   if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
 		   
-		   GraphicStudent currStudent = studentShapes.get(i);
+		   DispStudent currStudent = studentShapes.get(i);
 		   
-		   GraphicTable infoBox = new GraphicTable();
+		   DispRectangle infoBox = new DispRectangle();
 		   infoBox.setX(currStudent.getX() - SCALE_FACTOR*4 - 2);
 		   infoBox.setY(currStudent.getY() - SCALE_FACTOR*2 - 2);
 		   infoBox.setWidth(SCALE_FACTOR*4);
 		   infoBox.setHeight(SCALE_FACTOR*2);
 		   infoBox.draw(g,Color.MAGENTA);
+		   
+		   
 		   g.fillOval((int)currStudent.getX(),(int)currStudent.getY(),(int)currStudent.getRadius(),(int)currStudent.getRadius());
-		   g.setColor(Color.BLUE);
+		   
+		   g.setColor(Color.BLUE); 
+		   
+		   
+		   
+		   
 		   g.fillOval((int)currStudent.getX() + 3,(int)currStudent.getY() + 3,(int)currStudent.getRadius() - 6,(int)currStudent.getRadius() - 6);
 		   
 		   g.drawString(currStudent.getOriginalStudent().getName(),(int)infoBox.getX() + 5,(int)infoBox.getY() + 15);
@@ -184,7 +214,47 @@ public class FloorPlan extends JFrame {
 	   g.fillRect((int)current.getX(),(int)current.getY(),(int)current.getWidth(),(int)current.getHeight());
 	   */
    }
-
+      
+   
+   if (mouseListener.clickPending())  {
+	   Point clickPos = mouseListener.getClick();
+	   mouseListener.clickHandled();
+	   
+	   if (this.state == UIState.STATE_VIEWING) {
+	   		   			  
+		  for (int i = 0; i < studentShapes.size(); i++) {
+			   if (studentShapes.get(i).getBoundingBox().contains(clickPos)) {
+				   
+				   this.state = UIState.STATE_STUDENT_SELECTED;
+				   
+				   System.out.println("yay!");
+				   DispCircle highlight = new DispCircle();
+				   
+				   highlight.setX(studentShapes.get(i).getX());
+				   highlight.setY(studentShapes.get(i).getY());
+				   highlight.setRadius(studentShapes.get(i).getRadius());
+				   highlight.setReferenceNumber(1);
+				   
+				   uiShapes.add(highlight);					   
+				   uiShapes.add(backButton);
+				   
+				   
+				   
+				   
+			   }
+		   }
+		  
+	   } else if (this.state == UIState.STATE_STUDENT_SELECTED) {
+		   	if (backButton.getBoundingBox().contains(clickPos)) {
+		   		uiShapes.clear();
+		   		this.state = UIState.STATE_VIEWING;
+		   	}	   
+	   }
+	   
+	   
+	   
+   }  
+   
    this.repaint();
   }
  }
@@ -192,9 +262,23 @@ public class FloorPlan extends JFrame {
  private class MyMouseListener implements MouseInputListener, MouseMotionListener {
   private int x;
   private int y;
+  private int clickX;
+  private int clickY;
+  private boolean clickHandled;
 
+  public void clickHandled() {
+	  this.clickHandled = true;
+  }
+  
+  public boolean clickPending() {
+	  return (!this.clickHandled);
+  }
+  
   @Override
   public void mouseClicked(MouseEvent e) {
+	  clickX = e.getX();
+	  clickY = e.getY();
+	  this.clickHandled = false;
   }
 
   @Override
@@ -225,6 +309,10 @@ public class FloorPlan extends JFrame {
   
   public Point getPos() {
    return new Point(x, y);
+  }
+  
+  public Point getClick() {
+	  return new Point(clickX,clickY);
   }
  }
  

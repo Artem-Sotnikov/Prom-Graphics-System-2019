@@ -18,3 +18,9 @@
 /Shape.class
 /GraphicTable.class
 /GraphicStudent.class
+/DispRectangle.class
+/DispCircle.class
+/DispStudent.class
+/FloorPlan$UIState.class
+/FloorPlan$Display$UIState.class
+/UIState.class
