@@ -152,7 +152,7 @@ public class FloorPlan extends JFrame {
     uiShapes.get(i).draw(g, Color.YELLOW);
    }
 
-   if (this.state == UIState.STATE_STUDENT_SELECTED) {
+   if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
     g.setColor(Color.BLACK);
     g.drawString("BACK",25,25);
    }
@@ -207,12 +207,34 @@ public class FloorPlan extends JFrame {
        highlight.setRadius(studentShapes.get(i).getRadius());
        highlight.setReferenceNumber(1);
 
-       uiShapes.add((Shape)(highlight));        
+       uiShapes.add((highlight));        
        uiShapes.add(backButton);
       }
      }
+     
+     for (int i = 0; i < tableShapes.size(); i++) {
+    	 if (tableShapes.get(i).getBoundingBox().contains(clickPos)) {
+    		 
+    		 this.state = UIState.STATE_TABLE_SELECTED;
+    		 
+    		 DispRectangle highlight = new DispRectangle();
+    		 
+    		 highlight.setX(tableShapes.get(i).getX());
+	         highlight.setY(tableShapes.get(i).getY());
+	         highlight.setWidth(tableShapes.get(i).getWidth());
+	         highlight.setHeight(tableShapes.get(i).getHeight());
+	         
+	         highlight.setReferenceNumber(1);
+	         
+	         uiShapes.add((highlight));        
+	         uiShapes.add(backButton);
+    		 
+    		 
+    		 
+    	 }
+     }
 
-    } else if (this.state == UIState.STATE_STUDENT_SELECTED) {
+    } else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
      if (backButton.getBoundingBox().contains(clickPos)) {
       uiShapes.clear();
       this.state = UIState.STATE_VIEWING;

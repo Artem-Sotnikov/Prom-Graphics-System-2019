@@ -19,6 +19,6 @@ public class Table {
 	}
 	
 	public int getSize() {		
-		return 12;
+		return 18;
 	}
 }
