@@ -97,7 +97,7 @@ public class FloorPlan extends JFrame {
 		public ArrayList<DispRectangle> tableList;
 		public ArrayList<DispCircle> studentList;
 
-		LoadFile(ArrayList<DispRectangle> tableL, ArrayList<DispCircle> studentL) {
+		public LoadFile(ArrayList<DispRectangle> tableL, ArrayList<DispCircle> studentL) {
 			this.studentList = studentL;
 			this.tableList = tableL;
 		}
@@ -107,7 +107,7 @@ public class FloorPlan extends JFrame {
 	}
 
 	private LoadFile loadShapes() {  
-		return new LoadFile();  
+		return new LoadFile();
 	}
 
 	private void saveShapes() {
