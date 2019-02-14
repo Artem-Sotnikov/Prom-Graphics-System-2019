@@ -46,13 +46,15 @@ public class FloorPlan extends JFrame {
  
  public void generateFloorPlan(ArrayList<Table> tables) {
   int tableSize = tables.get(0).getSize();
+  final int SCALE_FACTOR = 20;
+  final int OFFSET_FACTOR = 5;
   double determinedX = 0;
   double determinedY = 0;
   
   for (int i = 0; i < tables.size(); i++) {
    Square tableCreation = new Square();
-   tableCreation.setHeight(20);
-   tableCreation.setWidth(tableSize*10); 
+   tableCreation.setHeight(2*SCALE_FACTOR);
+   tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
    
    
    if (i == 0) {
@@ -60,11 +62,11 @@ public class FloorPlan extends JFrame {
     determinedY = 100;
     //System.out.println("initial active");
    } else {
-    determinedX = tableShapes.get(i - 1).getX() + tableSize*10 + 40;
+    determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
     determinedY = tableShapes.get(i - 1).getY();
-    if (determinedX > 900 - tableSize*10) {
+    if (determinedX > 900 - tableSize*SCALE_FACTOR) {
      determinedX = 100;
-     determinedY = determinedY + 60;
+     determinedY = determinedY + SCALE_FACTOR*6;
     }
     
                   
@@ -74,6 +76,25 @@ public class FloorPlan extends JFrame {
    tableCreation.setY(determinedY);
    
    tableShapes.add(tableCreation);
+   
+   for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
+	  
+	   Circle studentCreation = new Circle();
+	   
+	   String temp = tables.get(i).getStudents().get(j).getName();
+	   System.out.println(temp);
+	   studentCreation.setRadius(SCALE_FACTOR - 2);
+	   
+	   if (j < (tableSize/2)) {		   
+		   studentCreation.setX(determinedX + SCALE_FACTOR*j);
+		   studentCreation.setY(determinedY - SCALE_FACTOR - OFFSET_FACTOR);
+	   } else {
+		   studentCreation.setX(determinedX + SCALE_FACTOR*(j - (tableSize/2)));
+		   studentCreation.setY(determinedY + SCALE_FACTOR*2 + OFFSET_FACTOR);
+	   }
+	   studentShapes.add(studentCreation);
+	   
+   }
    
   }
  }
