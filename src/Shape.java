@@ -3,52 +3,43 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 abstract class Shape {
-  private double x;
-  private double y;
-  private int referenceNumber;
-  
-  
+	private double x;
+	private double y;
+	private int referenceNumber;
 
-public Shape(double x, double y) {
-   this.x = x;
-   this.y = y;
-   this.referenceNumber = 0;
-  }
-  
-  public Shape() {};
-  
-  abstract void draw(Graphics g, Color color); 
-  
+	public Shape(double x, double y) {
+		this.x = x;
+		this.y = y;
+		this.referenceNumber = 0;
+	}
 
-  /**
-   * @return the x
-   */
-  public double getX() {
-   return x;
-  }
+	public Shape() {};
 
-  /**
-   * @return the y
-   */
-  public double getY() {
-   return y;
-  }  
-  
-  public void setX(double input) {
-	  this.x = input;
-  }
-  
-  public void setY(double input) {
-	  this.y = input;
-  }
-  
-  public int getReferenceNumber() {
-	return referenceNumber;
-  }
+	abstract void draw(Graphics g, Color color); 
+	
+	public double getX() {
+		return x;
+	}
 
-  public void setReferenceNumber(int referenceNumber) {
-	this.referenceNumber = referenceNumber;
-  }
-  
-  public abstract Rectangle getBoundingBox();
- }
+	public double getY() {
+		return y;
+	}  
+
+	public void setX(double input) {
+		this.x = input;
+	}
+
+	public void setY(double input) {
+		this.y = input;
+	}
+
+	public int getReferenceNumber() {
+		return referenceNumber;
+	}
+
+	public void setReferenceNumber(int referenceNumber) {
+		this.referenceNumber = referenceNumber;
+	}
+
+	public abstract Rectangle getBoundingBox();
+}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class TestMain { 
 	static JFrame window; 
 
-
 	public static void main(String[] args) {
 		window = new FloorPlan();
 
