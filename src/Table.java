@@ -10,15 +10,15 @@ public class Table {
 		rList.add(new Student("Alice"));
 		rList.add(new Student("Carly"));
 		rList.add(new Student("Denis"));
-		rList.add(new Student("Eve"));
-		rList.add(new Student("Fanny"));
-		rList.add(new Student("Nate"));
-		rList.add(new Student("Lloyd"));
+//		rList.add(new Student("Eve"));
+//		rList.add(new Student("Fanny"));
+//		rList.add(new Student("Nate"));
+//		rList.add(new Student("Lloyd"));
 		
 		return rList;
 	}
 	
 	public int getSize() {		
-		return 10;
+		return 20;
 	}
 }

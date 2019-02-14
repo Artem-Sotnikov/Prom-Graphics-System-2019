@@ -24,7 +24,9 @@ public class FloorPlan extends JFrame {
  private Shape square;
  private Shape info;
  
- Color IP_PURPLE = new Color(135,128,184);
+ final Color IP_PURPLE = new Color(135,128,184);
+ final int SCALE_FACTOR = 20;
+ final int OFFSET_FACTOR = 5;
  
  public FloorPlan() {
   super("Floor Plan");
@@ -45,9 +47,7 @@ public class FloorPlan extends JFrame {
  }
  
  public void generateFloorPlan(ArrayList<Table> tables) {
-  int tableSize = tables.get(0).getSize();
-  final int SCALE_FACTOR = 20;
-  final int OFFSET_FACTOR = 5;
+  int tableSize = tables.get(0).getSize();  
   double determinedX = 0;
   double determinedY = 0;
   
@@ -155,13 +155,34 @@ public class FloorPlan extends JFrame {
    }
    
    Point mousePos = this.mouseListener.getPos();
-   if (square.getBoundingBox().contains(mousePos)) {
-    info.draw(g, Color.GREEN);
-   }
-   square.draw(g, Color.RED);
-   
+//   if (square.getBoundingBox().contains(mousePos)) {
+//    info.draw(g, Color.GREEN);
+//   }
+//   square.draw(g, Color.RED);
+//   
    for (int i = 0; i < studentShapes.size(); i++) {
-	   //ree
+	   if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
+		   
+		   GraphicStudent currStudent = studentShapes.get(i);
+		   
+		   GraphicTable infoBox = new GraphicTable();
+		   infoBox.setX(currStudent.getX() - SCALE_FACTOR*4 - 2);
+		   infoBox.setY(currStudent.getY() - SCALE_FACTOR*2 - 2);
+		   infoBox.setWidth(SCALE_FACTOR*4);
+		   infoBox.setHeight(SCALE_FACTOR*2);
+		   infoBox.draw(g,Color.MAGENTA);
+		   g.fillOval((int)currStudent.getX(),(int)currStudent.getY(),(int)currStudent.getRadius(),(int)currStudent.getRadius());
+		   g.setColor(Color.BLUE);
+		   g.fillOval((int)currStudent.getX() + 3,(int)currStudent.getY() + 3,(int)currStudent.getRadius() - 6,(int)currStudent.getRadius() - 6);
+		   
+		   g.drawString(currStudent.getOriginalStudent().getName(),(int)infoBox.getX() + 5,(int)infoBox.getY() + 15);
+		   
+	   }
+	   /*
+	   g.setColor(Color.MAGENTA);
+	   Rectangle current = studentShapes.get(i).getBoundingBox();
+	   g.fillRect((int)current.getX(),(int)current.getY(),(int)current.getWidth(),(int)current.getHeight());
+	   */
    }
 
    this.repaint();
@@ -207,126 +228,7 @@ public class FloorPlan extends JFrame {
   }
  }
  
- private abstract class Shape {
-  private double x;
-  private double y;
-  
-  public Shape(double x, double y) {
-   this.x = x;
-   this.y = y;
-  }
-  
-  public Shape() {};
-  
-  abstract void draw(Graphics g, Color color); 
-  
 
-  /**
-   * @return the x
-   */
-  public double getX() {
-   return x;
-  }
-
-  /**
-   * @return the y
-   */
-  public double getY() {
-   return y;
-  }  
-  
-  public void setX(double input) {
-	  this.x = input;
-  }
-  
-  public void setY(double input) {
-	  this.y = input;
-  }
-  
-  public abstract Rectangle getBoundingBox();
- }
- 
- private class GraphicTable extends Shape {
-  private double width;
-  private double height;
-  
-  public GraphicTable(double x, double y, double width, double height) {
-   super(x, y);
-   this.width = width;
-   this.height = height;
-  }
-  
-  public GraphicTable() {};
-  
-  public double getWidth() {
-   return width;
-  }
-
-  public void setWidth(double width) {
-   this.width = width;
-  }
-
-  public double getHeight() {
-   return height;
-  }
-
-  public void setHeight(double height) {
-   this.height = height;
-  }
-
-  
-  @Override
-  public void draw(Graphics g, Color color) {
-   //Color IP_PURPLE = new Color(135,128,184);
-   g.setColor(color);
-   g.fillRect((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
-  }
-
-  @Override
-  public Rectangle getBoundingBox() {
-   return new Rectangle((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
-  }
- }
- 
- private class GraphicStudent extends Shape {
-  private double radius;
-  private Student originalStudent;
-  
-
-public GraphicStudent(double x, double y, double rad) {
-   super(x, y);
-   this.radius = rad;
-   // TODO Auto-generated constructor stub
-  }
-  
-  public GraphicStudent() {};
-  
-  public double getRadius() {
-   return this.radius;
-  }  
-  
-  public void setRadius(double rad) {
-   this.radius = rad;
-  }
-  
-  public Student getOriginalStudent() {
-	return originalStudent;
-  }
-
-  public void setOriginalStudent(Student originalStudent) {
-	this.originalStudent = originalStudent;
-  }
-  
-  @Override
-  public void draw(Graphics g, Color color) {
-   g.setColor(color);
-   g.fillOval((int)this.getX(),(int)this.getY(),(int)this.radius,(int)this.radius);
-  }
-  
-  public Rectangle getBoundingBox() {
-	  return new Rectangle();
-  }
- }
  
  
  public static void main(String[] args) {
