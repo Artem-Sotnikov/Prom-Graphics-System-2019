@@ -3,15 +3,18 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+<<<<<<< HEAD
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+// import java.util.ArrayList;
+=======
 import java.awt.event.MouseMotionListener;
-
+>>>>>>> e55ff825a65654ef5f98a915780306de6002320f
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
-
+//import java.util.ArrayList;
 
 public class FloorPlan extends JFrame {
  private static final long serialVersionUID = 1L;
@@ -23,8 +26,6 @@ public class FloorPlan extends JFrame {
  // private ArrayList<Table> tables;
  private Shape square;
  private Shape info;
- 
- Color IP_PURPLE = new Color(135,128,184);
  
  public FloorPlan() {
   super("Floor Plan");
@@ -51,20 +52,20 @@ public class FloorPlan extends JFrame {
   
   for (int i = 0; i < tables.size(); i++) {
    Square tableCreation = new Square();
-   tableCreation.setHeight(20);
-   tableCreation.setWidth(tableSize*10); 
+   tableCreation.setHeight(40);
+   tableCreation.setWidth((tableSize/2)*10); 
    
    
    if (i == 0) {
     determinedX = 100;
     determinedY = 100;
-    //System.out.println("initial active");
+    System.out.println("initial active");
    } else {
-    determinedX = tableShapes.get(i - 1).getX() + tableSize*10 + 40;
+    determinedX = tableShapes.get(i - 1).getX() + 100;
     determinedY = tableShapes.get(i - 1).getY();
     if (determinedX > 900 - tableSize*10) {
      determinedX = 100;
-     determinedY = determinedY + 60;
+     determinedY = determinedY + 100;
     }
     
                   
@@ -124,18 +125,18 @@ public class FloorPlan extends JFrame {
    setDoubleBuffered(true);
    
    for (int i = 0; i < studentShapes.size(); i++) {
-    studentShapes.get(i).draw(g,Color.BLUE);    
+    studentShapes.get(i).draw(g);    
    }
    
    for (int i = 0; i < tableShapes.size(); i++) {
-    tableShapes.get(i).draw(g, IP_PURPLE);
+    tableShapes.get(i).draw(g);
    }
    
    Point mousePos = this.mouseListener.getPos();
    if (square.getBoundingBox().contains(mousePos)) {
-    info.draw(g, Color.GREEN);
+    info.draw(g);
    }
-   square.draw(g, Color.RED);
+   square.draw(g);
 
    this.repaint();
   }
@@ -191,7 +192,7 @@ public class FloorPlan extends JFrame {
   
   public Shape() {};
   
-  abstract void draw(Graphics g, Color color); 
+  abstract void draw(Graphics g); 
   
 
   /**
@@ -206,15 +207,9 @@ public class FloorPlan extends JFrame {
    */
   public double getY() {
    return y;
-  }  
-  
-  public void setX(double input) {
-	  this.x = input;
   }
   
-  public void setY(double input) {
-	  this.y = input;
-  }
+  public abstract void draw(Graphics g);
   
   public abstract Rectangle getBoundingBox();
  }
@@ -249,9 +244,9 @@ public class FloorPlan extends JFrame {
 
   
   @Override
-  public void draw(Graphics g, Color color) {
-   //Color IP_PURPLE = new Color(135,128,184);
-   g.setColor(color);
+  public void draw(Graphics g) {
+   Color IP_PURPLE = new Color(135,128,184);
+   g.setColor(IP_PURPLE);
    g.fillRect((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
   }
 
@@ -274,21 +269,18 @@ public class FloorPlan extends JFrame {
   
   public double getRadius() {
    return this.radius;
-  }  
+  }
   
   public void setRadius(double rad) {
    this.radius = rad;
   }
   
   @Override
-  public void draw(Graphics g, Color color) {
-   g.setColor(color);
+  public void draw(Graphics g) {
+   g.setColor(Color.BLUE);
    g.fillOval((int)this.getX(),(int)this.getY(),(int)this.radius,(int)this.radius);
   }
   
-  public Rectangle getBoundingBox() {
-	  return new Rectangle();
-  }
  }
  
  public static void main(String[] args) {
