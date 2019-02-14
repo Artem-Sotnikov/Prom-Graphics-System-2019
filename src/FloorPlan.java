@@ -25,6 +25,7 @@ public class FloorPlan extends JFrame {
 	final int OFFSET_FACTOR = 5;
 
 	final DispRectangle backButton = new DispRectangle(10,10,100,40);
+	final DispRectangle switchButton = new DispRectangle(10,60,100,40);
 
 	public FloorPlan() {
 		super("Floor Plan");
@@ -53,13 +54,13 @@ public class FloorPlan extends JFrame {
 			tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
 
 			if (i == 0) {
-				determinedX = 100;
+				determinedX = 120;
 				determinedY = 100;
 			} else {
 				determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 				determinedY = tableShapes.get(i - 1).getY();
 				if (determinedX > 900 - tableSize*SCALE_FACTOR/2) {
-					determinedX = 100;
+					determinedX = 120;
 					determinedY = determinedY + SCALE_FACTOR*6;
 				}
 			}
@@ -87,7 +88,6 @@ public class FloorPlan extends JFrame {
 				studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
 				studentShapes.add(studentCreation);
 			}
-
 		}
 	}
 
@@ -131,7 +131,12 @@ public class FloorPlan extends JFrame {
 			this.addMouseListener(this.mouseListener);
 			this.addMouseMotionListener(this.mouseListener);
 			this.setBackground(LIGHT_GRAY); 
+			
 			this.state = UIState.STATE_VIEWING;
+			
+			switchButton.setPrivateColor(Color.ORANGE);
+			backButton.setPrivateColor(Color.YELLOW);
+			
 		}
 
 		public void paintComponent(Graphics g) {
@@ -147,12 +152,16 @@ public class FloorPlan extends JFrame {
 			}
 
 			for (int i = 0; i < uiShapes.size(); i++) {
-				uiShapes.get(i).draw(g, Color.YELLOW);
+				uiShapes.get(i).draw(g);
 			}
 
-			if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
+			if (this.state != UIState.STATE_VIEWING) {
 				g.setColor(Color.BLACK);
 				g.drawString("BACK",25,25);
+				
+				if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
+					g.drawString("SWITCH WITH",25,25 + 50);
+				}
 			}
 
 			Point mousePos = this.mouseListener.getPos();
@@ -173,16 +182,43 @@ public class FloorPlan extends JFrame {
 
 					g.setColor(Color.BLUE); 
 
-					g.fillOval((int)currStudent.getX() + 3,(int)currStudent.getY() + 3,(int)currStudent.getRadius() - 6,(int)currStudent.getRadius() - 6);
+					g.fillOval((int)currStudent.getX() + 3,(int)currStudent.getY() + 3,
+							(int)currStudent.getRadius() - 6,(int)currStudent.getRadius() - 6);
 
 					g.drawString(currStudent.getOriginalStudent().getName(),(int)infoBox.getX() + 5,(int)infoBox.getY() + 15);
 
 				}
+				
+				
 				/*
     g.setColor(Color.MAGENTA);
     Rectangle current = studentShapes.get(i).getBoundingBox();
     g.fillRect((int)current.getX(),(int)current.getY(),(int)current.getWidth(),(int)current.getHeight());
 				 */
+			}
+			
+			for (int i = 0; i < tableShapes.size(); i++) {
+				if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
+
+					DispRectangle currTable = tableShapes.get(i);
+
+					DispRectangle infoBox = new DispRectangle();
+					infoBox.setX(currTable.getX() - SCALE_FACTOR*4 - 2);
+					infoBox.setY(currTable.getY() - SCALE_FACTOR*2 - 2);
+					infoBox.setWidth(SCALE_FACTOR*4);
+					infoBox.setHeight(SCALE_FACTOR*2);
+					infoBox.draw(g,Color.MAGENTA);
+
+					g.fillRect((int)currTable.getX(),(int)currTable.getY(),(int)currTable.getWidth(),(int)currTable.getHeight());
+
+					g.setColor(IP_PURPLE); 
+
+					g.fillRect((int)currTable.getX() + 3,(int)currTable.getY() + 3,
+							(int)currTable.getWidth() - 6,(int)currTable.getHeight() - 6);
+
+					g.drawString("Table " + Integer.toString(i),(int)infoBox.getX() + 5,(int)infoBox.getY() + 15);
+
+				}
 			}
 
 
@@ -203,10 +239,12 @@ public class FloorPlan extends JFrame {
 							highlight.setX(studentShapes.get(i).getX());
 							highlight.setY(studentShapes.get(i).getY());
 							highlight.setRadius(studentShapes.get(i).getRadius());
+							highlight.setPrivateColor(Color.YELLOW);
 							highlight.setReferenceNumber(1);
 
-							uiShapes.add((highlight));        
+							uiShapes.add(highlight);        
 							uiShapes.add(backButton);
+							uiShapes.add(switchButton);
 						}
 					}
 
@@ -221,23 +259,59 @@ public class FloorPlan extends JFrame {
 							highlight.setY(tableShapes.get(i).getY());
 							highlight.setWidth(tableShapes.get(i).getWidth());
 							highlight.setHeight(tableShapes.get(i).getHeight());
+							highlight.setPrivateColor(Color.YELLOW);
+
 
 							highlight.setReferenceNumber(1);
 
-							uiShapes.add((highlight));        
+							uiShapes.add(highlight);        
 							uiShapes.add(backButton);
+							uiShapes.add(switchButton);
 						}
 					}
 
 				} else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
+					
 					if (backButton.getBoundingBox().contains(clickPos)) {
 						uiShapes.clear();
 						this.state = UIState.STATE_VIEWING;
-					}    
+					}  else if (switchButton.getBoundingBox().contains(clickPos)) {
+						
+						uiShapes.remove(switchButton);
+						
+						switch (this.state) {						
+						case STATE_STUDENT_SELECTED:
+							this.state = UIState.STATE_STUDENT_MOVING;
+						case STATE_TABLE_SELECTED:
+							this.state = UIState.STATE_TABLE_MOVING;
+						default:
+							break;
+						}																	
+					} 										
+				} else if (this.state == UIState.STATE_STUDENT_MOVING) {
+					
+					if (backButton.getBoundingBox().contains(clickPos)) {
+						uiShapes.add(switchButton);
+						this.state = UIState.STATE_STUDENT_SELECTED;
+					}
+					
+				} else if (this.state ==  UIState.STATE_TABLE_MOVING) {
+					if (backButton.getBoundingBox().contains(clickPos)) {
+						uiShapes.add(switchButton);
+						this.state = UIState.STATE_TABLE_SELECTED;
+					}
 				}
-			}  
-
+			}
+			
+			if (this.state == UIState.STATE_TABLE_MOVING) {
+				for (int i = 0; i < tableShapes.size(); i++) {
+					
+					tableShapes.get(i).draw(g,Color.GREEN);
+				}
+			}
+			
 			this.repaint();
+			
 		}
 	}
 

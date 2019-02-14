@@ -6,7 +6,8 @@ abstract class Shape {
 	private double x;
 	private double y;
 	private int referenceNumber;
-
+	private Color privateColor;
+	
 	public Shape(double x, double y) {
 		this.x = x;
 		this.y = y;
@@ -16,7 +17,16 @@ abstract class Shape {
 	public Shape() {};
 
 	abstract void draw(Graphics g, Color color); 
+	abstract void draw(Graphics g);
 	
+	public Color getPrivateColor() {
+		return privateColor;
+	}
+
+	public void setPrivateColor(Color privateColor) {
+		this.privateColor = privateColor;
+	}
+
 	public double getX() {
 		return x;
 	}

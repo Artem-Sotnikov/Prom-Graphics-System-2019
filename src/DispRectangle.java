@@ -35,6 +35,12 @@ class DispRectangle extends Shape {
 		g.setColor(color);
 		g.fillRect((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
 	}
+	
+	@Override 
+	public void draw(Graphics g) {
+		g.setColor(this.getPrivateColor());
+		g.fillRect((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
+	}
 
 	@Override
 	public Rectangle getBoundingBox() {
