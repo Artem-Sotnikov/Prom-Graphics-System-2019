@@ -92,6 +92,8 @@ public class FloorPlan extends JFrame {
 		   studentCreation.setX(determinedX + SCALE_FACTOR*(j - (tableSize/2)));
 		   studentCreation.setY(determinedY + SCALE_FACTOR*2 + OFFSET_FACTOR);
 	   }
+	   
+	   studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
 	   studentShapes.add(studentCreation);
 	   
    }
@@ -157,6 +159,10 @@ public class FloorPlan extends JFrame {
     info.draw(g, Color.GREEN);
    }
    square.draw(g, Color.RED);
+   
+   for (int i = 0; i < studentShapes.size(); i++) {
+	   //ree
+   }
 
    this.repaint();
   }
@@ -284,8 +290,10 @@ public class FloorPlan extends JFrame {
  
  private class GraphicStudent extends Shape {
   private double radius;
+  private Student originalStudent;
   
-  public GraphicStudent(double x, double y, double rad) {
+
+public GraphicStudent(double x, double y, double rad) {
    super(x, y);
    this.radius = rad;
    // TODO Auto-generated constructor stub
@@ -301,6 +309,14 @@ public class FloorPlan extends JFrame {
    this.radius = rad;
   }
   
+  public Student getOriginalStudent() {
+	return originalStudent;
+  }
+
+  public void setOriginalStudent(Student originalStudent) {
+	this.originalStudent = originalStudent;
+  }
+  
   @Override
   public void draw(Graphics g, Color color) {
    g.setColor(color);
@@ -311,6 +327,7 @@ public class FloorPlan extends JFrame {
 	  return new Rectangle();
   }
  }
+ 
  
  public static void main(String[] args) {
   System.out.println("System Operational");
