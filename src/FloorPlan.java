@@ -178,8 +178,10 @@ public class FloorPlan extends JFrame {
 					infoBox.setHeight(SCALE_FACTOR*2);
 					infoBox.draw(g,Color.MAGENTA);
 
-					g.fillOval((int)currStudent.getX(),(int)currStudent.getY(),(int)currStudent.getRadius(),(int)currStudent.getRadius());
-
+					//g.fillOval((int)currStudent.getX(),(int)currStudent.getY(),(int)currStudent.getRadius(),(int)currStudent.getRadius());
+					
+					currStudent.draw(g,Color.MAGENTA);
+					
 					g.setColor(Color.BLUE); 
 
 					g.fillOval((int)currStudent.getX() + 3,(int)currStudent.getY() + 3,
@@ -209,8 +211,9 @@ public class FloorPlan extends JFrame {
 					infoBox.setHeight(SCALE_FACTOR*2);
 					infoBox.draw(g,Color.MAGENTA);
 
-					g.fillRect((int)currTable.getX(),(int)currTable.getY(),(int)currTable.getWidth(),(int)currTable.getHeight());
-
+					//g.fillRect((int)currTable.getX(),(int)currTable.getY(),(int)currTable.getWidth(),(int)currTable.getHeight());
+					currTable.draw(g,Color.MAGENTA);
+					
 					g.setColor(IP_PURPLE); 
 
 					g.fillRect((int)currTable.getX() + 3,(int)currTable.getY() + 3,
@@ -307,6 +310,12 @@ public class FloorPlan extends JFrame {
 				for (int i = 0; i < tableShapes.size(); i++) {
 					
 					tableShapes.get(i).draw(g,Color.GREEN);
+					
+					g.setColor(IP_PURPLE);
+					g.fillRect((int)tableShapes.get(i).getX() + 3,(int)tableShapes.get(i).getY() + 3,
+							(int)tableShapes.get(i).getWidth() - 6,(int)tableShapes.get(i).getHeight() - 6);
+					
+					
 				}
 			}
 			
