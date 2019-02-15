@@ -24,9 +24,9 @@ public class FloorPlan extends JFrame {
 	final DispRectangle backButton = new DispRectangle(10,10,100,40);
 	final DispRectangle saveButton = new DispRectangle(120,10,100,40);
 	final DispRectangle loadButton = new DispRectangle(230,10,100,40);
+	final DispRectangle switchButton = new DispRectangle(10,60,100,40);
 	
 	private LoadFile loadFile = new LoadFile();
-	final DispRectangle switchButton = new DispRectangle(10,60,100,40);
 
 	public FloorPlan() {
 		super("Floor Plan");
