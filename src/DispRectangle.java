@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.io.Serializable;
 
-class DispRectangle extends Shape {
+public class DispRectangle extends Shape implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private double width;
 	private double height;
 
@@ -45,5 +48,10 @@ class DispRectangle extends Shape {
 	@Override
 	public Rectangle getBoundingBox() {
 		return new Rectangle((int)this.getX(), (int)this.getY(), (int)this.width, (int)this.height);
+	}
+	
+	@Override
+	public String toString() {
+		return "X: " + this.getX() + "\nY: " + this.getY() + "\nWidth: " + this.width + "\nHeight: " + this.height;
 	}
 }

@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.io.Serializable;
 
-class DispCircle extends Shape {
+public class DispCircle extends Shape implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private double radius;
 
 	public DispCircle(double x, double y, double radius) {
