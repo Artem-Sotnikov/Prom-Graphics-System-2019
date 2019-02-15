@@ -20,5 +20,5 @@ public class TestMain {
 		while (true) {
 			((FloorPlan) window).displayFloorPlan();
 		}
-	} 
+	}
 }
