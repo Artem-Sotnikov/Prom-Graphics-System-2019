@@ -1,10 +1,7 @@
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.awt.event.MouseMotionListener;
 import javax.swing.JFrame;
@@ -25,6 +22,10 @@ public class FloorPlan extends JFrame {
 	final int OFFSET_FACTOR = 5;
 
 	final DispRectangle backButton = new DispRectangle(10,10,100,40);
+	final DispRectangle saveButton = new DispRectangle(120,10,100,40);
+	final DispRectangle loadButton = new DispRectangle(230,10,100,40);
+	
+	private LoadFile loadFile = new LoadFile();
 
 	public FloorPlan() {
 		super("Floor Plan");
@@ -40,8 +41,22 @@ public class FloorPlan extends JFrame {
 		this.tableShapes = new ArrayList<DispRectangle>(0);
 		this.studentShapes = new ArrayList<DispStudent>(0);
 		this.uiShapes = new ArrayList<Shape>(0);
+		uiShapes.add(saveButton);
+		uiShapes.add(loadButton);
 	}
-
+	
+	public void loadShapesFromFile() {
+		loadFile.loadShapes();
+		tableShapes = loadFile.getTableList();
+		studentShapes = loadFile.getStudentList();
+	}
+	
+	public void saveShapesToFile() {
+		loadFile.setTableList(this.tableShapes);
+		loadFile.setStudentList(this.studentShapes);
+		loadFile.saveShapes();
+	}
+	
 	public void generateFloorPlan(ArrayList<Table> tables) {
 		int tableSize = tables.get(0).getSize();  
 		double determinedX = 0;
@@ -91,27 +106,6 @@ public class FloorPlan extends JFrame {
 		}
 	}
 
-	private class LoadFile {
-		public ArrayList<DispRectangle> tableList;
-		public ArrayList<DispCircle> studentList;
-
-		public LoadFile(ArrayList<DispRectangle> tableL, ArrayList<DispCircle> studentL) {
-			this.studentList = studentL;
-			this.tableList = tableL;
-		}
-
-		//temporary, do not use in final version
-		LoadFile() {}
-	}
-
-	private LoadFile loadShapes() {  
-		return new LoadFile();  
-	}
-
-	private void saveShapes() {
-		// write to file this.shapes  
-	}
-
 	public void displayFloorPlan() {
 		this.disp.repaint();
 	}
@@ -149,6 +143,11 @@ public class FloorPlan extends JFrame {
 			for (int i = 0; i < uiShapes.size(); i++) {
 				uiShapes.get(i).draw(g, Color.YELLOW);
 			}
+			
+			// text for buttons
+			g.setColor(Color.BLACK);
+			g.drawString("SAVE", (int)(saveButton.getX() + saveButton.getWidth()/2 - 25), (int)(saveButton.getY() + saveButton.getHeight()/2));
+			g.drawString("LOAD", (int)(loadButton.getX() + loadButton.getWidth()/2 - 25), (int)(loadButton.getY() + loadButton.getHeight()/2));
 
 			if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
 				g.setColor(Color.BLACK);
@@ -159,7 +158,6 @@ public class FloorPlan extends JFrame {
 
 			for (int i = 0; i < studentShapes.size(); i++) {
 				if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
-
 					DispStudent currStudent = studentShapes.get(i);
 
 					DispRectangle infoBox = new DispRectangle();
@@ -176,7 +174,6 @@ public class FloorPlan extends JFrame {
 					g.fillOval((int)currStudent.getX() + 3,(int)currStudent.getY() + 3,(int)currStudent.getRadius() - 6,(int)currStudent.getRadius() - 6);
 
 					g.drawString(currStudent.getOriginalStudent().getName(),(int)infoBox.getX() + 5,(int)infoBox.getY() + 15);
-
 				}
 				/*
     g.setColor(Color.MAGENTA);
@@ -185,13 +182,18 @@ public class FloorPlan extends JFrame {
 				 */
 			}
 
-
 			if (mouseListener.clickPending())  {
 				Point clickPos = mouseListener.getClick();
 				mouseListener.clickHandled();
-
+				
+				// click save or load button
+				if (saveButton.getBoundingBox().contains(clickPos)) {
+					saveShapesToFile();
+				} else if (loadButton.getBoundingBox().contains(clickPos)) {
+					loadShapesFromFile();
+				}
+				
 				if (this.state == UIState.STATE_VIEWING) {
-
 					for (int i = 0; i < studentShapes.size(); i++) {
 						if (studentShapes.get(i).getBoundingBox().contains(clickPos)) {
 
@@ -232,6 +234,8 @@ public class FloorPlan extends JFrame {
 				} else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
 					if (backButton.getBoundingBox().contains(clickPos)) {
 						uiShapes.clear();
+						uiShapes.add(saveButton);
+						uiShapes.add(loadButton);
 						this.state = UIState.STATE_VIEWING;
 					}    
 				}
@@ -297,7 +301,7 @@ public class FloorPlan extends JFrame {
 			return new Point(x, y);
 		}
 	}
-
+	
 	public static void main(String[] args) {
 		System.out.println("System Operational");
 	}
