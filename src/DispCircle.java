@@ -28,6 +28,12 @@ public class DispCircle extends Shape implements Serializable {
 		g.setColor(color);
 		g.fillOval((int)this.getX(),(int)this.getY(),(int)this.radius,(int)this.radius);
 	}
+	
+	@Override
+	public void draw(Graphics g) {
+		g.setColor(this.getPrivateColor());
+		g.fillOval((int)this.getX(), (int)this.getY(), (int)this.radius, (int)this.radius);
+	}
 
 	public Rectangle getBoundingBox() {
 		return new Rectangle((int)(this.getX()), (int)(this.getY()), (int)this.radius, (int)this.radius);
