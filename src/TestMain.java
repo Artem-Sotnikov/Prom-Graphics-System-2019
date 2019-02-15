@@ -14,9 +14,12 @@ public class TestMain {
 		}
 		
 		// either load from existing file OR generate from list of tables
-		//((FloorPlan) window).loadShapesFromFile();
+
+		// ((FloorPlan) window).loadShapesFromFile();
 		((FloorPlan) window).generateFloorPlan(testTables);
-		((FloorPlan) window).displayFloorPlan();
-		
+
+		while (true) {
+			((FloorPlan) window).displayFloorPlan();
+		}
 	} 
 }
