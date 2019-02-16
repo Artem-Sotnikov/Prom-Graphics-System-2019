@@ -242,18 +242,7 @@ public class FloorPlan extends JFrame {
      }
 
 
-     /*
-    g.setColor(Color.MAGENTA);
-    Rectangle current = studentShapes.get(i).getBoundingBox();
-    g.fillRect((int)current.getX(),(int)current.getY(),(int)current.getWidth(),(int)current.getHeight());
-    }
 
-    for (int i = 0; i < tableShapes.size(); i++) {
-     if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
-
-      DispRectangle currTable = tableShapes.get(i);
-
-      */
     }
 
     if (this.state != UIState.STATE_TABLE_MOVING) {
@@ -344,9 +333,6 @@ public class FloorPlan extends JFrame {
 
         this.state = UIState.STATE_STUDENT_SELECTED;
 
-        DispCircle highlight = new DispCircle();
-        System.out.println("yay!");
-        //DispCircle highlight = new DispCircle();
         studentHighlight.setX(studentShapes.get(i).getX());
         studentHighlight.setY(studentShapes.get(i).getY());
         studentHighlight.setRadius(studentShapes.get(i).getRadius());
@@ -395,6 +381,49 @@ public class FloorPlan extends JFrame {
        switch (this.state) {      
        case STATE_STUDENT_SELECTED:
         this.state = UIState.STATE_STUDENT_MOVING;
+        
+        DispRectangle tableSearch = new DispRectangle(studentHighlight.getX() - 10,studentHighlight.getY() - 10,
+        		studentHighlight.getRadius() + 20, studentHighlight.getRadius() + 20);
+        
+        
+        for (int i = 0; i < tableShapes.size(); i++) {
+        	DispRectangle currTable = tableShapes.get(i); 
+        	
+        	if (tableSearch.getBoundingBox().intersects(currTable.getBoundingBox())) {
+        		i = tableShapes.size();
+        		
+        		DispRectangle studentSearch = new DispRectangle(currTable.getX() - 10,currTable.getY() - 10,
+        				currTable.getWidth() + 20,currTable.getHeight() + 20);
+        		
+        		for (int j = 0; j < studentShapes.size(); j++) {
+        			if (studentSearch.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
+        				
+        				DispCircle uiCreation = new DispCircle();
+        				DispCircle uiShade = new DispCircle();
+        				
+        				uiCreation.setX(studentShapes.get(j).getX());
+        				uiShade.setX(studentShapes.get(j).getX() + 4);
+        				uiCreation.setY(studentShapes.get(j).getY());
+        				uiShade.setY(studentShapes.get(j).getY() + 4);
+        				
+        				uiCreation.setRadius(studentShapes.get(j).getRadius());
+        				uiShade.setRadius(studentShapes.get(j).getRadius() - 8);
+        				
+        				uiCreation.setPrivateColor(Color.GREEN);
+        				uiShade.setPrivateColor(Color.BLUE);
+        				
+        				
+        				switchUIShapes.add(uiCreation);
+        				switchUIShapes.add(uiShade);
+        			}
+        			
+        		}
+        		
+        	}
+        }
+        
+        
+        
         break;
        case STATE_TABLE_SELECTED:
         this.state = UIState.STATE_TABLE_MOVING;       
@@ -472,35 +501,23 @@ public class FloorPlan extends JFrame {
       if (backButton.getBoundingBox().contains(clickPos)) {
        uiShapes.add(switchButton);
        this.state = UIState.STATE_STUDENT_SELECTED;
-       uiShapes.clear();
-       uiShapes.add(backButton);
-       uiShapes.add(switchButton);
-       uiShapes.add(saveButton);
-       uiShapes.add(loadButton);
-       uiShapes.add(studentHighlight);
+       switchUIShapes.clear();
       }
 
      } else if (this.state ==  UIState.STATE_TABLE_MOVING) {
       if (backButton.getBoundingBox().contains(clickPos)) {
        uiShapes.add(switchButton);
        this.state = UIState.STATE_TABLE_SELECTED;
-       //uiShapes.clear();
        switchUIShapes.clear();
-       //      uiShapes.add(backButton);
-       //      uiShapes.add(switchButton);
-       //      uiShapes.add(saveButton);
-       //      uiShapes.add(loadButton);
-       //      uiShapes.add(tableHighlight);
       }
      }
     }
 
-    if (this.state == UIState.STATE_TABLE_MOVING) {
-     for (int i = 0; i < tableShapes.size(); i++) {
-
-      tableShapes.get(i).draw(g,Color.GREEN);
-     }
-    }
+//    if (this.state == UIState.STATE_TABLE_MOVING) {
+//     for (int i = 0; i < tableShapes.size(); i++) {
+//      tableShapes.get(i).draw(g,Color.GREEN);
+//     }
+//    }
    }
 
    //   if (this.state == UIState.STATE_TABLE_MOVING) {
