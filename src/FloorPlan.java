@@ -379,29 +379,8 @@ public class FloorPlan extends JFrame {
         uiShapes.add(backButton);
         uiShapes.add(switchButton);
        }
-       
-       for (int i = 0; i < 40; i++) {
-        
-        DispRectangle uiCreation = new DispRectangle();
-        uiCreation.setHeight(2*SCALE_FACTOR);
-        uiCreation.setWidth(tableSize*SCALE_FACTOR/2); 
- 
-        if (i == 0) {
-         determinedX = tableShapes.get(tableShapes.size() - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
-         determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-         if (determinedX > SCREEN_SIZE.getWidth() - 100 - tableSize*SCALE_FACTOR/2) {
-          determinedX = SCALE_FACTOR*10;
-          determinedY = determinedY + SCALE_FACTOR*6;
-         }
-        } else {
-         determinedX = switchUIShapes.get(0).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
-         determinedY = switchUIShapes.get(0).getY();
-         if (determinedX > SCREEN_SIZE.getWidth() - 100 - tableSize*SCALE_FACTOR/2) {
-          determinedX = SCALE_FACTOR*10;
-          determinedY = determinedY + SCALE_FACTOR*6;
-         }
-
       }
+     
      } else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
 
       if (backButton.getBoundingBox().contains(clickPos)) {
@@ -439,7 +418,7 @@ public class FloorPlan extends JFrame {
          switchUIShapes.add(1,uiShade);
         }
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 40; i++) {
 
          DispRectangle uiCreation = new DispRectangle();
          uiCreation.setHeight(2*SCALE_FACTOR);
@@ -448,15 +427,15 @@ public class FloorPlan extends JFrame {
          if (i == 0) {
           determinedX = tableShapes.get(tableShapes.size() - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
           determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-          if (determinedX > 900 - tableSize*SCALE_FACTOR/2) {
-           determinedX = 120;
+          if (determinedX > SCREEN_SIZE.getWidth() - 100 - tableSize*SCALE_FACTOR/2) {
+           determinedX = SCALE_FACTOR*10;
            determinedY = determinedY + SCALE_FACTOR*6;
           }
          } else {
           determinedX = switchUIShapes.get(0).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
           determinedY = switchUIShapes.get(0).getY();
-          if (determinedX > 900 - tableSize*SCALE_FACTOR/2) {
-           determinedX = 120;
+          if (determinedX > SCREEN_SIZE.getWidth() - 100 - tableSize*SCALE_FACTOR/2) {
+           determinedX = SCALE_FACTOR*10;
            determinedY = determinedY + SCALE_FACTOR*6;
           }
          }
