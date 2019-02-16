@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -28,9 +29,7 @@ public class FloorPlan extends JFrame {
  final int SCALE_FACTOR = 20;
  final int OFFSET_FACTOR = 5;
 
- Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();   
- 
- 
+ Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();    
 
  final int MAX_TOP = 0;
  final int MAX_LEFT = -2000;
@@ -51,9 +50,17 @@ public class FloorPlan extends JFrame {
  public FloorPlan() {
   super("Floor Plan");
   this.disp = new Display();
+  Display sideBar = new Display();
+  
+  Dimension sideBarSize = new Dimension(200,(int) SCREEN_SIZE.getHeight());
+  
+  sideBar.setPreferredSize(sideBarSize);
+  sideBar.setBackground(Color.ORANGE); 
+  
 
   this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  this.add(this.disp);
+  this.add(this.disp, BorderLayout.CENTER);
+  this.add(sideBar,BorderLayout.WEST);
   this.setSize(1000,1000);
 
   this.requestFocusInWindow();
