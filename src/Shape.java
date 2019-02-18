@@ -11,21 +11,58 @@ public abstract class Shape implements Serializable {
 	private int referenceNumber;
 	private Color privateColor;
 	
-	public Shape(double x, double y) {
-		this.x = x;
-		this.y = y;
-		this.referenceNumber = 0;
-	}
-
+	private boolean isHighlighted;
+	private boolean isSelected;
+	private boolean isHovered;
+	private boolean real;
+	
 	public Shape() {};
 
 	abstract void draw(Graphics g, Color color); 
 	abstract void draw(Graphics g);
 	
+	public boolean isReal() {
+		return this.real;
+	}
+	
+	public void setReal(boolean r) {
+		this.real = r;
+	}
+	
 	public Color getPrivateColor() {
 		return privateColor;
 	}
+	
+	public boolean isHighlighted() {
+		return isHighlighted;
+	}
 
+	public void setHighlighted(boolean isHighlighted) {
+		this.isHighlighted = isHighlighted;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
+
+	public boolean isHovered() {
+		return isHovered;
+	}
+
+	public void setHovered(boolean isHovered) {
+		this.isHovered = isHovered;
+	}	
+	
+	public Shape(double x, double y) {
+		this.x = x;
+		this.y = y;
+		this.referenceNumber = 0;
+	}	
+	
 	public void setPrivateColor(Color privateColor) {
 		this.privateColor = privateColor;
 	}
