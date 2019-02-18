@@ -18,8 +18,8 @@ public class TestMain {
 		// ((FloorPlan) window).loadShapesFromFile();
 		((FloorPlan) window).generateFloorPlan(testTables);
 
-		while (true) {
+		//while (true) {
 			((FloorPlan) window).displayFloorPlan();
-		}
+		//}
 	} 
 }
