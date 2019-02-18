@@ -17,6 +17,10 @@ public class DispStudent extends DispCircle implements Serializable {
 		this.setSelected(false);		
 	}
 	
+	public DispStudent(String name) {
+		
+	}
+	
 	public DispStudent(double x, double y, double radius, Student originalStudent) {
 		super(x, y, radius);
 		this.originalStudent = originalStudent;

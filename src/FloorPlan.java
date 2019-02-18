@@ -23,10 +23,11 @@ public class FloorPlan extends JFrame {
  private static final long serialVersionUID = 1L;
 
  private Display disp;
+ private SidePanel sidePnl;
  private ArrayList<DispRectangle> tableShapes;
  private ArrayList<DispStudent> studentShapes;
  private ArrayList<Shape> uiShapes;
- private ArrayList<Shape> switchUIShapes;
+ 
  
  private int MAX_TOP = 0;
  private int MAX_LEFT = 0;
@@ -38,36 +39,51 @@ public class FloorPlan extends JFrame {
  final DispRectangle loadButton = new DispRectangle(SCALE_FACTOR*10 + 110,10,100,40);
  final DispRectangle switchButton = new DispRectangle(10,60,100,40);
 
- private DispRectangle tableHighlight;
  private DispCircle selectedStudent;
 
+ private DispStudent focusedStudent;
+ private DispTable focusedTable;
+ 
  private LoadFile loadFile = new LoadFile();
+ 
+ // For communication between panels
+ 
+ 
+ private boolean saveButtonActive;
+ private boolean loadButtonActive;
+ 
+ private boolean backButtonActive;
+ private boolean backButtonVisible;
+ 
+ private boolean switchButtonActive;
+ private boolean switchButtonVisible;
+ 
 
  public FloorPlan() {
   super("Floor Plan");
   this.disp = new Display();
-  JPanel sideBar = new JPanel();
+  this.sidePnl = new SidePanel();
   
   Dimension sideBarSize = new Dimension(200,(int) SCREEN_SIZE.getHeight());
   
-  sideBar.setPreferredSize(sideBarSize);
-  sideBar.setBackground(Color.ORANGE); 
+  sidePnl.setPreferredSize(sideBarSize);
+  sidePnl.setBackground(Color.ORANGE); 
   
   this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   this.add(this.disp, BorderLayout.CENTER);
-  this.add(sideBar,BorderLayout.WEST);
-  this.setSize(1000,1000);
+  this.add(sidePnl,BorderLayout.WEST);
+  this.setSize((int)SCREEN_SIZE.getWidth(),(int)SCREEN_SIZE.getHeight());
 
   this.requestFocusInWindow();
-  //this.setVisible(true);
 
   this.tableShapes = new ArrayList<DispRectangle>(0);
   this.studentShapes = new ArrayList<DispStudent>(0);
   this.uiShapes = new ArrayList<Shape>(0);
-  this.switchUIShapes = new ArrayList<Shape>(0);
 
   selectedStudent = new DispCircle();
-  tableHighlight = new DispRectangle();
+ 
+  focusedStudent = new DispStudent();
+  focusedTable = new DispTable();
 
   saveButton.setPrivateColor(Color.CYAN);
   loadButton.setPrivateColor(Color.CYAN);
@@ -76,6 +92,20 @@ public class FloorPlan extends JFrame {
   uiShapes.add(loadButton);
  }
 
+ public void displayFloorPlan() {
+
+  this.setVisible(true);
+  
+  while (true) {  
+   this.disp.repaint();
+   this.sidePnl.repaint();
+  }  
+ }
+
+ public void exit() {
+  this.dispose();
+ }
+ 
  public void loadShapesFromFile() {
   loadFile.loadShapes();
   tableShapes = loadFile.getTableList();
@@ -104,6 +134,7 @@ public class FloorPlan extends JFrame {
    DispTable tableCreation = new DispTable();
    
    tableCreation.setReal(true);
+   tableCreation.setOriginalTable(tables.get(i));
    
    tableCreation.setHeight(2*SCALE_FACTOR);
    tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
@@ -182,19 +213,112 @@ public class FloorPlan extends JFrame {
   
  }
 
- public void displayFloorPlan() {
+ private class SidePanel extends JPanel {
 
-  this.setVisible(true);
-  
-  while (true) {  
-   this.disp.repaint();
-  }  
+	 final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
+	 final DispRectangle loadButton2 = new DispRectangle(10,60,100,40);
+	 final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
+	 final DispRectangle switchButton2 = new DispRectangle(10,160,100,40); 
+	 
+	 private boolean loadButtonState;
+	 private boolean saveButtonState;
+	 private boolean backButtonState;
+	 private boolean switchButtonState;
+	 
+	 private boolean clickPending;
+	 
+	 private MyMouseListener mouseListener2;
+	 	 
+	 SidePanel() {
+		 this.mouseListener2 = new MyMouseListener();
+         this.addMouseListener(this.mouseListener2);
+	     this.addMouseMotionListener(this.mouseListener2);
+	     this.addMouseWheelListener(this.mouseListener2);
+	     
+		 this.handleAll();
+	 }
+	 
+	 public boolean anyPending() {
+		 return this.clickPending;
+	 }
+	 
+	 public boolean loadButtonPending() {
+		 return this.loadButtonState;
+	 }
+	 
+	 public boolean saveButtonPending() {
+		 return this.saveButtonState; 
+	 }
+	 
+	 public boolean backButtonPending() {
+		 return this.backButtonState;
+	 }
+	 
+	 public boolean switchButtonPending() {
+		 return this.switchButtonState;
+	 }
+	 
+	 public void handleAll() {
+		 this.clickPending = false;
+		 
+		 this.loadButtonState = false;
+		 this.saveButtonState = false;
+		 this.backButtonState = false;
+		 this.switchButtonState = false;
+	 }
+	 
+	 public void paintComponent (Graphics g) {
+		 super.paintComponent(g);
+		 setDoubleBuffered(true);
+		 
+		 saveButton2.draw(g,Color.CYAN);
+		 loadButton2.draw(g,Color.CYAN);
+		 
+		 if (disp.getUIState() != UIState.STATE_VIEWING) {
+			 backButton2.draw(g,Color.YELLOW);
+		 }
+		 
+		 if ((disp.getUIState() == UIState.STATE_STUDENT_SELECTED) || (disp.getUIState() == UIState.STATE_TABLE_SELECTED)) {
+			 switchButton2.draw(g,Color.GREEN);
+		 }
+		 
+		 g.setColor(Color.BLACK);
+		 
+		 if (focusedStudent.isHovered()) {
+			 Student dataStudent = focusedStudent.getOriginalStudent();
+			 
+			 g.drawString(dataStudent.getName(),10,400);
+			 
+		 } else if (focusedTable.isHovered()) {
+			 if (focusedTable.isReal()) {
+				 Table dataTable = focusedTable.getOriginalTable();
+			 
+			 
+				 g.drawString(Integer.toString(dataTable.getSize()),10,400);
+			 }
+		 }
+		 
+		 if (mouseListener2.clickPending())  {
+		     Point clickPos = mouseListener2.getClick();		     
+		     
+		     this.clickPending = true;
+		     
+		     mouseListener2.clickHandled();
+		     
+		     if (backButton2.getBoundingBox().contains(clickPos)) {
+		    	 this.backButtonState = true;
+		    	 System.out.println("Detected 2!");
+		     } else if (switchButton2.getBoundingBox().contains(clickPos)) {
+		    	 this.switchButtonState = true;
+		     } else if (saveButton2.getBoundingBox().contains(clickPos)) {
+		    	 this.saveButtonState = true;
+		     } else if (loadButton2.getBoundingBox().contains(clickPos)) {
+		    	 this.loadButtonState = true;
+		     }
+		 }
+	 }
  }
-
- public void exit() {
-  this.dispose();
- }
-
+ 
  private class Display extends JPanel {
   private static final long serialVersionUID = 1L;
 
@@ -233,10 +357,6 @@ public class FloorPlan extends JFrame {
     ((DispTable) tableShapes.get(i)).drawObject(g);
    }
 
-   for (int i = 0; i < switchUIShapes.size(); i++) {
-    switchUIShapes.get(i).draw(g);      
-   }
-
    for (int i = 0; i < uiShapes.size(); i++) {
     uiShapes.get(i).draw(g);      
    }
@@ -266,7 +386,10 @@ public class FloorPlan extends JFrame {
      if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
     	 
       studentShapes.get(i).setHovered(true);
-      studentShapes.get(i).drawBox(g);      
+      studentShapes.get(i).drawBox(g); 
+      
+      focusedStudent = studentShapes.get(i);
+      focusedTable.setHovered(false);
       
      } else {
     	 studentShapes.get(i).setHovered(false); 
@@ -280,7 +403,10 @@ public class FloorPlan extends JFrame {
       if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
      	 
        tableShapes.get(i).setHovered(true);
-       ((DispTable) tableShapes.get(i)).drawBox(g,i);      
+       ((DispTable) tableShapes.get(i)).drawBox(g,i);
+       
+       focusedTable = (DispTable) tableShapes.get(i);
+       focusedStudent.setHovered(false);
        
       } else {
      	 tableShapes.get(i).setHovered(false); 
@@ -289,11 +415,11 @@ public class FloorPlan extends JFrame {
     
     
 
-    if (mouseListener.clickPending())  {
+    if ((mouseListener.clickPending()) || (sidePnl.anyPending()))  {
      Point clickPos = mouseListener.getClick();
      clickPos.x += camX;
      clickPos.y += camY;
-     mouseListener.clickHandled();
+     mouseListener.clickHandled();     
 
      // click save or load button
      if (saveButton.getBoundingBox().contains(clickPos)) {
@@ -329,8 +455,10 @@ public class FloorPlan extends JFrame {
       }
      
      } else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
-
-      if (backButton.getBoundingBox().contains(clickPos)) {
+      System.out.println(Boolean.toString(sidePnl.backButtonPending()));
+      if (sidePnl.backButtonPending()) {
+    	  System.out.println("yay?");
+       sidePnl.handleAll();  
        uiShapes.clear();
        uiShapes.add(saveButton);
        uiShapes.add(loadButton);
@@ -398,7 +526,6 @@ public class FloorPlan extends JFrame {
       if (backButton.getBoundingBox().contains(clickPos)) {
        uiShapes.add(switchButton);
        this.state = UIState.STATE_STUDENT_SELECTED;
-       switchUIShapes.clear();
        
        for (int i = 0; i < studentShapes.size(); i++) {
     	studentShapes.get(i).setHighlighted(false);   
@@ -410,14 +537,16 @@ public class FloorPlan extends JFrame {
       if (backButton.getBoundingBox().contains(clickPos)) {
        uiShapes.add(switchButton);
        this.state = UIState.STATE_TABLE_SELECTED;
-       switchUIShapes.clear();
        
        for (int i = 0; i < tableShapes.size(); i++) {
        	tableShapes.get(i).setHighlighted(false);   
        }
        
       }
-     }    
+     } 
+     
+     sidePnl.handleAll();
+     
     }
    } 
   }
@@ -426,6 +555,10 @@ public class FloorPlan extends JFrame {
    zooming(g);
    panning(g);
   }
+  
+  public UIState getUIState() {
+	  return this.state;
+  } 
 
   public void zooming(Graphics g) {
    Graphics2D g2 = (Graphics2D) g;

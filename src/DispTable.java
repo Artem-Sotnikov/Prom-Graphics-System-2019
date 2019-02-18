@@ -4,7 +4,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class DispTable extends DispRectangle {
+	private Table originalTable;
 	
+	
+	public Table getOriginalTable() {
+		return originalTable;
+	}
+
+	public void setOriginalTable(Table originalTable) {
+		this.originalTable = originalTable;
+	}
+
 	DispTable() {
 		this.setHovered(false);
 		this.setHighlighted(false);
@@ -32,7 +42,7 @@ public class DispTable extends DispRectangle {
 				this.draw(g,Color.MAGENTA);
 			} else if (this.isHighlighted()) {
 				this.draw(g,Color.GREEN);
-			} else {
+			} else if (this.isReal()) {
 				this.draw(g,Color.MAGENTA);
 			}
 						
