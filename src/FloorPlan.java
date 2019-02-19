@@ -24,11 +24,6 @@ public class FloorPlan extends JFrame {
 	private int MAX_BOTTOM = 2000;
 	private int MAX_RIGHT = 2000;
 
-	final DispRectangle backButton = new DispRectangle(10,10,100,40);
-	final DispRectangle saveButton = new DispRectangle(SCALE_FACTOR*10,10,100,40);
-	final DispRectangle loadButton = new DispRectangle(SCALE_FACTOR*10 + 110,10,100,40);
-	final DispRectangle switchButton = new DispRectangle(10,60,100,40);
-
 	private DispCircle selectedStudent;
 	private DispStudent focusedStudent;
 	private DispTable focusedTable;
@@ -408,9 +403,6 @@ public class FloorPlan extends JFrame {
 			this.setBackground(LIGHT_GRAY); 
 
 			this.state = UIState.STATE_VIEWING;
-
-			switchButton.setPrivateColor(Color.ORANGE);
-			backButton.setPrivateColor(Color.YELLOW);
 
 		}
 
