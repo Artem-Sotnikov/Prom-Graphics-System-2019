@@ -14,9 +14,9 @@ public class TestMain {
  static String[] possibleDietaryRestrictions = {"vegetarian", "vegan", "peanut allergy", "lactose intolerant", "halal", "gluten free"}; 
 
  public static void main(String[] args) {
-	 
-	 // OUR CODE
-	 
+  
+  // OUR CODE
+  
   window = new FloorPlan();
 
   ArrayList<Table> testTables = new ArrayList<Table>();
@@ -79,17 +79,17 @@ public class TestMain {
  
  private static String randName(Random random, boolean isFirst) {
 
-	    String letters = "pyfgcrlaoeuidhtnsqjkxbmwvz"; 
-	    int nameLength = random.nextInt(6) + 5;
-	    String res = ""; 
-	    for (int i = 0; i < nameLength; i++) {
-	      res += letters.charAt(random.nextInt(26));
-	    }
-	    res = res.substring(0, 1).toUpperCase() + res.substring(1);
-	    if (isFirst){
-	      return res + " " + randName(random, false);
-	    } else { 
-	      return res;
-	    }
-	  }
+     String letters = "pyfgcrlaoeuidhtnsqjkxbmwvz"; 
+     int nameLength = random.nextInt(6) + 5;
+     String res = ""; 
+     for (int i = 0; i < nameLength; i++) {
+       res += letters.charAt(random.nextInt(26));
+     }
+     res = res.substring(0, 1).toUpperCase() + res.substring(1);
+     if (isFirst){
+       return res + " " + randName(random, false);
+     } else { 
+       return res;
+     }
+   }
 }
