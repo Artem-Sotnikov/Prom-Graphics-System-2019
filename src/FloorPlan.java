@@ -281,7 +281,7 @@ public class FloorPlan extends JFrame {
 
 		private MyMouseListener mouseListener2;
 
-		SidePanel() {
+		public SidePanel() {
 			this.mouseListener2 = new MyMouseListener();
 			this.addMouseListener(this.mouseListener2);
 			this.addMouseMotionListener(this.mouseListener2);
