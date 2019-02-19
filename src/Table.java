@@ -1,10 +1,12 @@
+// Contains testing code by Carol Chen
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Table implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public ArrayList<Student> getStudents() {
+	public ArrayList<Student> getStudentsCustom() {
 		ArrayList<Student> rList = new ArrayList<Student>(0);
 
 		rList.add(new Student("Bob"));
@@ -24,6 +26,25 @@ public class Table implements Serializable {
 	}
 	
 	public int getSize() {		
-		return 12;
+		return this.size;
 	}
+	
+	 private int size;
+	  private ArrayList<Student> students;
+
+	  Table(int initSize) { 
+	    size = initSize;
+	  }
+	  
+	  Table() {
+		  this.size = 12;
+	  }
+
+	  public ArrayList<Student> getStudents() { 
+	    return students; 
+	  }
+
+	  public void setStudents(ArrayList<Student> newStudents) { 
+	    students = newStudents;
+	  }
 }
