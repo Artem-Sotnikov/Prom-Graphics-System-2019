@@ -6,6 +6,25 @@ import java.util.ArrayList;
 public class Table implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private int size;
+	private ArrayList<Student> students;
+
+	public Table(int initSize) { 
+		size = initSize;
+	}
+
+	public Table() {
+		this.size = 12;
+	}
+
+	public ArrayList<Student> getStudents() { 
+		return students; 
+	}
+
+	public void setStudents(ArrayList<Student> newStudents) { 
+		students = newStudents;
+	}
+	
 	public ArrayList<Student> getStudentsCustom() {
 		ArrayList<Student> rList = new ArrayList<Student>(0);
 
@@ -21,30 +40,11 @@ public class Table implements Serializable {
 		rList.add(new Student("Lloyd"));
 		rList.add(new Student("Ken"));
 		//rList.add(new Student("Sarah"));
-		
+
 		return rList;
 	}
-	
+
 	public int getSize() {		
 		return this.size;
 	}
-	
-	 private int size;
-	  private ArrayList<Student> students;
-
-	  Table(int initSize) { 
-	    size = initSize;
-	  }
-	  
-	  Table() {
-		  this.size = 12;
-	  }
-
-	  public ArrayList<Student> getStudents() { 
-	    return students; 
-	  }
-
-	  public void setStudents(ArrayList<Student> newStudents) { 
-	    students = newStudents;
-	  }
 }

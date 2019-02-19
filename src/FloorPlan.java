@@ -18,7 +18,8 @@ public class FloorPlan extends JFrame {
 	private SidePanel sidePnl;
 	private ArrayList<DispTable> tableShapes;
 	private ArrayList<DispStudent> studentShapes;
-
+	private JFileChooser chooser;
+	
 	private int MAX_TOP = 0;
 	private int MAX_LEFT = 0;
 	private int MAX_BOTTOM = 2000;
@@ -58,6 +59,10 @@ public class FloorPlan extends JFrame {
 
 		focusedStudent = new DispStudent();
 		focusedTable = new DispTable();
+		
+		this.chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+		chooser.setFileFilter(filter);
 	}
 
 	public void displayFloorPlan() {
@@ -86,23 +91,23 @@ public class FloorPlan extends JFrame {
 	public void saveFloorPlan() {
 		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
 		loadFile.save();
+		System.out.println("Saved!");
 	}
 
 	public void chooseFile() {
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(null);
+		int returnVal = chooser.showOpenDialog(this); // after this line it somehow loops back??
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String fileName = chooser.getSelectedFile().getPath();
 			this.loadFile = new LoadFile(fileName);
 		} else if (returnVal == JFileChooser.CANCEL_OPTION) {
 			exit();
+		} else if (returnVal == JFileChooser.ERROR_OPTION) {
+			System.out.println("Error.");
+			exit();
 		}
 	}
 
 	public void generateFloorPlan(ArrayList<Table> tables) {
-
 		int tableSize = tables.get(0).getSize(); 
 
 		this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
@@ -227,8 +232,6 @@ public class FloorPlan extends JFrame {
 					determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
 					determinedY = tableShapes.get(i - 1).getY();
 
-					//System.out.println(determinedX);
-
 					if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
 						determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
 						determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
@@ -239,9 +242,7 @@ public class FloorPlan extends JFrame {
 						} else {
 							offset = true;
 						}
-
 					}
-
 				}
 
 				tableCreation.setX(determinedX);
@@ -251,7 +252,6 @@ public class FloorPlan extends JFrame {
 
 				double tableCenterX = determinedX + tableCreation.getHeight()/2;
 				double tableCenterY = determinedY + tableCreation.getHeight()/2;
-
 
 				for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
 					DispStudent studentCreation = new DispStudent();
@@ -325,8 +325,8 @@ public class FloorPlan extends JFrame {
 		final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
 		final DispRectangle switchButton2 = new DispRectangle(10,160,100,40); 
 
-		private boolean loadButtonState;
-		private boolean saveButtonState;
+		private boolean loadButtonState = false;
+		private boolean saveButtonState = false;
 		private boolean backButtonState;
 		private boolean switchButtonState;
 
