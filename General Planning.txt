@@ -4,3 +4,12 @@ Feature Plan:
 2.Dragging and saving for layout
 3.Graphic interface with hover for detailed info
 4.Buttons for general settings
+
+Finish features:
+
+save/load from file using file browser
+swith to has to actually work
+export to jpeg
+More in-window features (toggle hovertext for all students and tables [zoomed in]);
+Fix the bugs with zooming
+Everything must be JavaDoc.
