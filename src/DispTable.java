@@ -5,6 +5,7 @@ import java.awt.Graphics;
 
 public class DispTable extends DispRectangle {
 	private Table originalTable;
+	private boolean isRound;
 	
 	
 	public Table getOriginalTable() {
@@ -20,8 +21,17 @@ public class DispTable extends DispRectangle {
 		this.setHighlighted(false);
 		this.setReal(false);
 		this.setSelected(false);	
+		this.setRound(false);
 	}
 	
+	public boolean isRound() {
+		return isRound;
+	}
+
+	public void setRound(boolean isRound) {
+		this.isRound = isRound;
+	}
+
 	public void drawBox(Graphics g, int tableNumber) {
 		if (this.isReal()) {
 			DispRectangle infoBox = new DispRectangle();
@@ -32,6 +42,29 @@ public class DispTable extends DispRectangle {
 		    infoBox.draw(g,Color.MAGENTA);
 		    g.setColor(Color.BLACK);
 		    g.drawString("Table " + Integer.toString(tableNumber),(int)infoBox.getX() + 5,(int)infoBox.getY() + 15);
+		}
+	}
+	
+	@Override
+	public void draw(Graphics g, Color color) {	
+		g.setColor(color);
+		
+		if (this.isRound()) {
+			g.fillOval((int)this.getX(), (int)this.getY(), (int)this.getWidth(), (int)this.getHeight());
+		} else {
+			g.fillRect((int)this.getX(), (int)this.getY(), (int)this.getWidth(), (int)this.getHeight());
+		}
+	}	
+	
+	public void drawReduced(Graphics g, Color color, int reductionSize) {
+		g.setColor(color);
+		
+		if (this.isRound()) {
+			g.fillOval((int)this.getX() + reductionSize,(int)this.getY() + reductionSize,
+					(int)this.getWidth() - reductionSize*2,(int)this.getHeight() - reductionSize*2);
+		} else {
+			g.fillRect((int)this.getX() + reductionSize,(int)this.getY() + reductionSize,
+					(int)this.getWidth() - reductionSize*2,(int)this.getHeight() - reductionSize*2);
 		}
 	}
 	
@@ -48,21 +81,18 @@ public class DispTable extends DispRectangle {
 						
 			
 			if (this.isSelected()) {
-				g.setColor(Color.YELLOW);
+				this.drawReduced(g,Color.YELLOW,5);
 			} else if (this.isReal()) {
-				g.setColor(IP_PURPLE);
+				this.drawReduced(g,IP_PURPLE,5);
 			} else {
-				g.setColor(LIGHT_GRAY);
+				this.drawReduced(g,LIGHT_GRAY,5);
 			}
 
-	        g.fillRect((int)this.getX() + 5,(int)this.getY() + 5,
-	          (int)this.getWidth() - 10,(int)this.getHeight() - 10);
-			
+		
 	        if ((this.isHighlighted()) && (!this.isSelected())) {
+								
+				this.drawReduced(g,Color.GREEN,8);				
 				
-				g.setColor(Color.GREEN);
-				g.fillRect((int)this.getX() + 8,(int)this.getY() + 8,
-				          (int)this.getWidth() - 16,(int)this.getHeight() - 16);
 			}
 	
 		} else if (this.isSelected()) {
@@ -72,14 +102,12 @@ public class DispTable extends DispRectangle {
 			this.draw(g,Color.GREEN);
 			
 			if (this.isReal()) {
-				g.setColor(IP_PURPLE);
+				this.drawReduced(g,IP_PURPLE,5);
 			} else {
-				g.setColor(LIGHT_GRAY);
+				this.drawReduced(g,LIGHT_GRAY,5);
 			}
 
-			g.fillRect((int)this.getX() + 5,(int)this.getY() + 5,
-			          (int)this.getWidth() - 10,(int)this.getHeight() - 10);
-				
+			
 		} else {
 			if (this.isReal()) {
 				this.draw(g,IP_PURPLE);

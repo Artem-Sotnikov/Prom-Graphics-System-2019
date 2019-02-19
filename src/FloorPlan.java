@@ -20,8 +20,6 @@ public class FloorPlan extends JFrame {
  private SidePanel sidePnl;
  private ArrayList<DispRectangle> tableShapes;
  private ArrayList<DispStudent> studentShapes;
- private ArrayList<Shape> uiShapes;
- 
  
  private int MAX_TOP = 0;
  private int MAX_LEFT = 0;
@@ -61,18 +59,11 @@ public class FloorPlan extends JFrame {
 
   this.tableShapes = new ArrayList<DispRectangle>(0);
   this.studentShapes = new ArrayList<DispStudent>(0);
-  this.uiShapes = new ArrayList<Shape>(0);
 
   selectedStudent = new DispCircle();
  
   focusedStudent = new DispStudent();
   focusedTable = new DispTable();
-
-  saveButton.setPrivateColor(Color.CYAN);
-  loadButton.setPrivateColor(Color.CYAN);
-
-  uiShapes.add(saveButton);
-  uiShapes.add(loadButton);
  }
 
  public void displayFloorPlan() {
@@ -194,6 +185,86 @@ public class FloorPlan extends JFrame {
    
   }
   
+ }
+ 
+ public void generateFloorPlan(ArrayList<Table> tables, String config) {
+	 if (config == "ROUND TABLES") {
+		  int tableSize = tables.get(0).getSize(); 
+		  int distToNextTable = tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
+
+		  this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
+		  System.out.println(MAX_RIGHT);
+		  this.MAX_BOTTOM = this.MAX_RIGHT;
+		  		  
+		  double determinedX = 0;
+		  double determinedY = 0;
+		  
+		  boolean offset = false;
+		  
+		  for (int i = 0; i < tables.size(); i++) {
+			   DispTable tableCreation = new DispTable();
+			   
+			   tableCreation.setReal(true);
+			   tableCreation.setRound(true);
+			   tableCreation.setOriginalTable(tables.get(i));
+			   
+			   tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
+			   tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
+
+			   if (i == 0) {
+			    determinedX = SCALE_FACTOR*10;
+			    determinedY = 100;
+			   } else {
+			    determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
+			    determinedY = tableShapes.get(i - 1).getY();
+			    
+			    //System.out.println(determinedX);
+			    
+			    if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
+			     determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
+			     determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
+			     
+			     if (offset) {
+				   	determinedX = SCALE_FACTOR*10;
+				   	offset = false;
+				 } else {
+					 offset = true;
+				 }
+			     
+			    }
+			    			    
+			   }
+
+			   tableCreation.setX(determinedX);
+			   tableCreation.setY(determinedY);
+
+			   tableShapes.add(tableCreation);
+			   
+			   double tableCenterX = determinedX + tableCreation.getHeight()/2;
+			   double tableCenterY = determinedY + tableCreation.getHeight()/2;
+					   
+
+			   for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
+			    DispStudent studentCreation = new DispStudent();
+			    
+			    studentCreation.setReal(true);
+
+			    studentCreation.setRadius(SCALE_FACTOR - 2);
+			    
+			    double currentAngle = j*2*Math.PI/tableSize; 
+			    System.out.println(currentAngle);
+			    
+			    studentCreation.setX(tableCenterX + tableCreation.getHeight()*Math.cos(currentAngle)/1.4 
+			    		- studentCreation.getRadius()/2);
+			    studentCreation.setY(tableCenterY + tableCreation.getHeight()*Math.sin(currentAngle)/1.4
+			    		- studentCreation.getRadius()/2);
+			    
+			    
+			    studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
+			    studentShapes.add(studentCreation);
+			   }
+			  }
+	 }
  }
 
  private class SidePanel extends JPanel {
@@ -344,6 +415,14 @@ final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
    setDoubleBuffered(true);
 
    updateCamera(g);
+   
+   //Draws borders
+   g.fillRect(MAX_LEFT + 5,MAX_TOP + 5,MAX_RIGHT - 10,5);
+   g.fillRect(MAX_LEFT + 5,MAX_TOP + 5,5,MAX_BOTTOM - 10);
+   g.fillRect(MAX_LEFT + 10,MAX_BOTTOM - 10,MAX_RIGHT - 10,5);
+   g.fillRect(MAX_RIGHT - 10,MAX_TOP + 5,5,MAX_BOTTOM - 10);
+   
+   //
 
    for (int i = 0; i < studentShapes.size(); i++) {
     studentShapes.get(i).drawObject(g);    
@@ -357,41 +436,43 @@ final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
    mousePos.x = (int) (mousePos.x * mouseListener.getZoomScale() + camX);
    mousePos.y = (int) (mousePos.y * mouseListener.getZoomScale() + camY);
 
-   
-   // Student hover is set and text box displayed directly
-   if (mouseListener.isDragging() == false) {
-    for (int i = 0; i < studentShapes.size(); i++) {
-     if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
-      
-      studentShapes.get(i).setHovered(true);
-      studentShapes.get(i).drawBox(g); 
-      
-      focusedStudent = studentShapes.get(i);
-      focusedTable.setHovered(false);
-      
-     } else {
-      studentShapes.get(i).setHovered(false); 
-     }
-    }
-   }
+   boolean studentHovered = false;
    
 // Table hover is set and text box displayed directly
-    if (mouseListener.isDragging() == false) {
-     for (int i = 0; i < tableShapes.size(); i++) {
-      if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
-       
-       tableShapes.get(i).setHovered(true);
-       ((DispTable) tableShapes.get(i)).drawBox(g,i);
-       
-       focusedTable = (DispTable) tableShapes.get(i);
-       focusedStudent.setHovered(false);
-       
-      } else {
-       tableShapes.get(i).setHovered(false); 
-      }
-    }
-    
-    
+   if (mouseListener.isDragging() == false) {
+    for (int i = 0; i < tableShapes.size(); i++) {
+     if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
+      
+      tableShapes.get(i).setHovered(true);
+      ((DispTable) tableShapes.get(i)).drawBox(g,i);
+      
+      focusedTable = (DispTable) tableShapes.get(i);
+      focusedStudent.setHovered(false);
+      studentHovered = true;
+      
+     } else {
+      tableShapes.get(i).setHovered(false); 
+     }
+   }
+   
+   // Student hover is set and text box displayed directly
+   if (!studentHovered) {
+	   if (mouseListener.isDragging() == false) {
+	    for (int i = 0; i < studentShapes.size(); i++) {
+	     if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
+	      
+	      studentShapes.get(i).setHovered(true);
+	      studentShapes.get(i).drawBox(g); 
+	      
+	      focusedStudent = studentShapes.get(i);
+	      focusedTable.setHovered(false);
+	      
+	     } else {
+	      studentShapes.get(i).setHovered(false); 
+	     }
+	    }
+	   }
+   }
 
     if ((mouseListener.clickPending()) || (sidePnl.anyPending()))  {
      Point clickPos = mouseListener.getClick();
