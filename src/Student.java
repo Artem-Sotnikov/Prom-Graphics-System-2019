@@ -1,4 +1,4 @@
-// Carol's code:
+// Contains testing code by Carol Chen
 
 import java.io.Serializable;
 import java.util.ArrayList;
