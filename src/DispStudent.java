@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import static constant.Constants.*;
 
-
 public class DispStudent extends DispCircle implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
