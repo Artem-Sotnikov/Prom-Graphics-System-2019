@@ -479,8 +479,7 @@ public class FloorPlan extends JFrame {
 			}
 
 			Point mousePos = this.mouseListener.getPos();
-			mousePos.x = (int) (((mousePos.x + (this.getSize().width/2) / mouseListener.getZoomScale())) - (this.getSize().width/2) + camX);
-			mousePos.y = (int) (((mousePos.y + (this.getSize().height/2) / mouseListener.getZoomScale())) - (this.getSize().height/2) + camY);
+			applyMouseTransformation(mousePos);
 
 			boolean studentHovered = false;
 
@@ -522,8 +521,7 @@ public class FloorPlan extends JFrame {
 
 				if ((mouseListener.clickPending()) || (sidePnl.anyPending()))  {
 					Point clickPos = mouseListener.getClick();
-					clickPos.x = (int) (((clickPos.x / mouseListener.getZoomScale())) + camX);
-					clickPos.y = (int) (((clickPos.y / mouseListener.getZoomScale())) + camY);
+					applyMouseTransformation(clickPos);
 					mouseListener.clickHandled();  
 
 					if (sidePnl.anyPending()) {
@@ -735,7 +733,12 @@ public class FloorPlan extends JFrame {
 				}
 			} 
 		}
-
+		
+		public void applyMouseTransformation(Point pos) {
+			pos.x = (int) ((((pos.x - (this.getSize().width/2)) / mouseListener.getZoomScale())) + (this.getSize().width/2) + camX);
+			pos.y = (int) ((((pos.y - (this.getSize().height/2)) / mouseListener.getZoomScale())) + (this.getSize().height/2) + camY);
+		}
+		
 		public void updateCamera(Graphics g) {
 			zooming(g);
 			panning(g);
