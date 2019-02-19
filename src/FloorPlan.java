@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -13,6 +14,10 @@ import static constant.Constants.*;
 
 public class FloorPlan extends JFrame {
 	private static final long serialVersionUID = 1L;
+	
+	private JFrame promptWindow;
+	private boolean resizeCalled;
+	private boolean visibleSet;
 
 	private Display disp;
 	private SidePanel sidePnl;
@@ -24,7 +29,12 @@ public class FloorPlan extends JFrame {
 	private int MAX_BOTTOM = 2000;
 	private int MAX_RIGHT = 2000;
 
-	private DispCircle selectedStudent;
+	private DispStudent selectedStudent;
+	private int selectedStudentIdx;
+	
+	private DispTable selectedTable;
+	private int selectedTableIdx;
+	
 	private DispStudent focusedStudent;
 	private DispTable focusedTable;
 
@@ -45,24 +55,48 @@ public class FloorPlan extends JFrame {
 		this.add(sidePnl,BorderLayout.WEST);
 		this.setSize((int)SCREEN_SIZE.getWidth(),(int)SCREEN_SIZE.getHeight());
 
-		this.requestFocusInWindow();
+		//this.requestFocusInWindow();
 
 		this.tableShapes = new ArrayList<DispTable>(0);
 		this.studentShapes = new ArrayList<DispStudent>(0);
 
-		selectedStudent = new DispCircle();
+		selectedStudent = new DispStudent();
+		selectedTable = new DispTable();
 
 		focusedStudent = new DispStudent();
 		focusedTable = new DispTable();
+		
+		this.resizeCalled = false;
+		
+		promptWindow = new JFrame();
+		//promptWindow.setVisible(true);
+		promptWindow.setSize(400,100);
+		promptWindow.setDefaultCloseOperation(HIDE_ON_CLOSE);
+		promptWindow.requestFocusInWindow();		
+		promptWindow.setLocationRelativeTo(null);		
+	
 	}
+	
+	
 
 	public void displayFloorPlan() {
 
 		this.setVisible(true);
-
+		
+		
+		
 		while (true) {  
 			this.disp.repaint();
 			this.sidePnl.repaint();
+			
+			if (disp.state == UIState.STATE_RESIZING) {
+				if (!visibleSet) {
+					promptWindow.setVisible(true);
+					visibleSet = true;
+				}
+			} else {
+				
+			}
 		}  
 	}
 
@@ -122,7 +156,7 @@ public class FloorPlan extends JFrame {
 				determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 				determinedY = tableShapes.get(i - 1).getY();
 				//System.out.println(determinedX);
-				if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
+				if (determinedX >= (this.MAX_RIGHT - tableSize*SCALE_FACTOR/2)) {
 					determinedX = SCALE_FACTOR*10;
 					determinedY = determinedY + SCALE_FACTOR*6;
 				}
@@ -167,7 +201,7 @@ public class FloorPlan extends JFrame {
 
 			determinedX = tableShapes.get(tableShapes.size() - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 			determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-			if (determinedX > MAX_RIGHT - 100 - tableSize*SCALE_FACTOR/2) {
+			if (determinedX >= MAX_RIGHT - tableSize*SCALE_FACTOR/2) {
 				determinedX = SCALE_FACTOR*10;
 				determinedY = determinedY + SCALE_FACTOR*6;
 			}
@@ -214,7 +248,7 @@ public class FloorPlan extends JFrame {
 				tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
 
 				if (i == 0) {
-					determinedX = SCALE_FACTOR*10;
+					determinedX = SCALE_FACTOR*6;
 					determinedY = 100;
 				} else {
 					determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
@@ -222,12 +256,12 @@ public class FloorPlan extends JFrame {
 
 					//System.out.println(determinedX);
 
-					if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
-						determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
+					if (determinedX >= (this.MAX_RIGHT - 2*SCALE_FACTOR - tableSize*SCALE_FACTOR/3)) {
+						determinedX = SCALE_FACTOR*6 + distToNextTable*(Math.cos(60*Math.PI/180));
 						determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
 
 						if (offset) {
-							determinedX = SCALE_FACTOR*10;
+							determinedX = SCALE_FACTOR*6;
 							offset = false;
 						} else {
 							offset = true;
@@ -281,12 +315,12 @@ public class FloorPlan extends JFrame {
 
 				determinedX = tableShapes.get(tableShapes.size() - 1).getX() + distToNextTable;
 				determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-				if (determinedX > MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/3) {
-					determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
+				if (determinedX >= MAX_RIGHT - SCALE_FACTOR*2 - tableSize*SCALE_FACTOR/3) {
+					determinedX = SCALE_FACTOR*6 + distToNextTable*(Math.cos(60*Math.PI/180));
 					determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
 
 					if (offset) {
-						determinedX = SCALE_FACTOR*10;
+						determinedX = SCALE_FACTOR*6;
 						offset = false;
 					} else {
 						offset = true;
@@ -317,11 +351,13 @@ public class FloorPlan extends JFrame {
 		final DispRectangle loadButton2 = new DispRectangle(10,60,100,40);
 		final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
 		final DispRectangle switchButton2 = new DispRectangle(10,160,100,40); 
+		final DispRectangle resizeButton = new DispRectangle(10,210,100,40);
 
 		private boolean loadButtonState;
 		private boolean saveButtonState;
 		private boolean backButtonState;
 		private boolean switchButtonState;
+		private boolean resizeButtonState;
 
 		private boolean clickPending;
 
@@ -355,6 +391,10 @@ public class FloorPlan extends JFrame {
 		public boolean switchButtonPending() {
 			return this.switchButtonState;
 		}
+		
+		public boolean resizeButtonPending() {
+			return this.resizeButtonState;
+		}
 
 		public void handleAll() {
 			this.clickPending = false;
@@ -363,6 +403,7 @@ public class FloorPlan extends JFrame {
 			this.saveButtonState = false;
 			this.backButtonState = false;
 			this.switchButtonState = false;
+			this.resizeButtonState = false;
 		}
 
 		public void paintComponent (Graphics g) {
@@ -381,6 +422,10 @@ public class FloorPlan extends JFrame {
 				backButton2.draw(g,Color.YELLOW);
 				g.setColor(Color.BLACK);
 				g.drawString("BACK",(int)backButton2.getX() + OFFSET_FACTOR,(int)backButton2.getY() + OFFSET_FACTOR*3);
+			} else {
+				resizeButton.draw(g,Color.RED);
+				g.setColor(Color.BLACK);
+				g.drawString("RESIZE ROOM",(int)resizeButton.getX() + OFFSET_FACTOR,(int)resizeButton.getY() + OFFSET_FACTOR*3);
 			}
 
 			if ((disp.getUIState() == UIState.STATE_STUDENT_SELECTED) || (disp.getUIState() == UIState.STATE_TABLE_SELECTED)) {
@@ -425,6 +470,8 @@ public class FloorPlan extends JFrame {
 					this.saveButtonState = true;
 				} else if (loadButton2.getBoundingBox().contains(clickPos)) {
 					this.loadButtonState = true;
+				} else if (resizeButton.getBoundingBox().contains(clickPos)) {
+					this.resizeButtonState = true;
 				}
 			}
 		}
@@ -532,6 +579,17 @@ public class FloorPlan extends JFrame {
 					} else if (sidePnl.loadButtonPending()) {
 						loadFloorPlan();
 						sidePnl.handleAll();
+					}
+					
+					if (sidePnl.resizeButtonPending()) {
+						this.state = UIState.STATE_RESIZING;
+						visibleSet = false;
+					}
+					
+					if (this.state == UIState.STATE_RESIZING) {
+						if (sidePnl.backButtonPending()) {
+							this.state = UIState.STATE_VIEWING;
+						}
 					}
 					
 					if (this.state == UIState.STATE_VIEWING) {

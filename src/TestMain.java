@@ -67,10 +67,9 @@ public class TestMain {
   
   // either load from existing file OR generate from list of tables (MAIN TESTING CODE)
 
-  // ((FloorPlan) window).loadShapesFromFile();
-  ((FloorPlan) window).generateFloorPlan(tables, "ROUND TABLES");
-  //((FloorPlan) window).load();
-  //((FloorPlan) window).generateFloorPlan(testTables);
+  //((FloorPlan) window).generateFloorPlan(testTables, "ROUND TABLES");
+  //((FloorPlan) window).loadFloorPlan();
+  ((FloorPlan) window).generateFloorPlan(testTables);
   
   //while (true) {
    ((FloorPlan) window).displayFloorPlan();
