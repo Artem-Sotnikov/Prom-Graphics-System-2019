@@ -70,7 +70,7 @@ public class FloorPlan extends JFrame {
 		this.dispose();
 	}
 
-	public void load() {
+	public void loadFloorPlan() {
 		chooseFile();
 		loadFile.load();
 		SaveFile saveFile = loadFile.getSaveFile();
@@ -78,7 +78,7 @@ public class FloorPlan extends JFrame {
 		studentShapes = saveFile.getStudentList();
 	}
 
-	public void save() {
+	public void saveFloorPlan() {
 		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
 		loadFile.save();
 	}
@@ -482,10 +482,10 @@ public class FloorPlan extends JFrame {
 
 					// click save or load button
 					if (sidePnl.saveButtonPending()) {
-						save();
+						saveFloorPlan();
 						sidePnl.handleAll();
 					} else if (sidePnl.loadButtonPending()) {
-						load();
+						loadFloorPlan();
 						sidePnl.handleAll();
 					}
 
