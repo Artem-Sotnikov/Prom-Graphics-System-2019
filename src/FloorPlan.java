@@ -24,9 +24,13 @@ public class FloorPlan extends JFrame {
 	private int MAX_BOTTOM = 2000;
 	private int MAX_RIGHT = 2000;
 
-	private DispCircle selectedStudent;
 	private DispStudent focusedStudent;
 	private DispTable focusedTable;
+	
+	private DispStudent selectedStudent;
+	private int selectedStudentIdx;
+	private DispTable selectedTable;
+	private int selectedTableIdx;
 
 	private LoadFile loadFile = new LoadFile("src/savefiles/savefile.txt");
 
@@ -50,7 +54,7 @@ public class FloorPlan extends JFrame {
 		this.tableShapes = new ArrayList<DispTable>(0);
 		this.studentShapes = new ArrayList<DispStudent>(0);
 
-		selectedStudent = new DispCircle();
+		selectedStudent = new DispStudent();
 
 		focusedStudent = new DispStudent();
 		focusedTable = new DispTable();
@@ -68,6 +72,7 @@ public class FloorPlan extends JFrame {
 
 	public void exit() {
 		this.dispose();
+		System.exit(0);
 	}
 
 	public void loadFloorPlan() {
@@ -91,6 +96,8 @@ public class FloorPlan extends JFrame {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String fileName = chooser.getSelectedFile().getPath();
 			this.loadFile = new LoadFile(fileName);
+		} else if (returnVal == JFileChooser.CANCEL_OPTION) {
+			exit();
 		}
 	}
 
@@ -394,8 +401,6 @@ public class FloorPlan extends JFrame {
 
 			g.setColor(Color.BLACK);
 
-
-
 			if (focusedStudent.isHovered()) {
 				Student dataStudent = focusedStudent.getOriginalStudent();
 
@@ -474,8 +479,8 @@ public class FloorPlan extends JFrame {
 			}
 
 			Point mousePos = this.mouseListener.getPos();
-			mousePos.x = (int) (mousePos.x * mouseListener.getZoomScale() + camX);
-			mousePos.y = (int) (mousePos.y * mouseListener.getZoomScale() + camY);
+			mousePos.x = (int) (((mousePos.x + (this.getSize().width/2) / mouseListener.getZoomScale())) - (this.getSize().width/2) + camX);
+			mousePos.y = (int) (((mousePos.y + (this.getSize().height/2) / mouseListener.getZoomScale())) - (this.getSize().height/2) + camY);
 
 			boolean studentHovered = false;
 
@@ -517,8 +522,8 @@ public class FloorPlan extends JFrame {
 
 				if ((mouseListener.clickPending()) || (sidePnl.anyPending()))  {
 					Point clickPos = mouseListener.getClick();
-					clickPos.x += camX;
-					clickPos.y += camY;
+					clickPos.x = (int) (((clickPos.x / mouseListener.getZoomScale())) + camX);
+					clickPos.y = (int) (((clickPos.y / mouseListener.getZoomScale())) + camY);
 					mouseListener.clickHandled();  
 
 					if (sidePnl.anyPending()) {
@@ -716,26 +721,17 @@ public class FloorPlan extends JFrame {
 									}
 
 									this.state = UIState.STATE_TABLE_SELECTED;        
-
-
 								}        
 							} 
 						}
-
-
-
 						if (sidePnl.backButtonPending()) {
-
 							this.state = UIState.STATE_TABLE_SELECTED;
-
 							for (int i = 0; i < tableShapes.size(); i++) {
 								tableShapes.get(i).setHighlighted(false);   
 							}
 						}
 					} 
-
 					sidePnl.handleAll();
-
 				}
 			} 
 		}
@@ -763,30 +759,10 @@ public class FloorPlan extends JFrame {
 				dy = (int) (mouseListener.getReleaseY() - mouseListener.getClick().getY());
 				int totalX = camX + dx;
 				int totalY = camY + dy;
-				if (totalX < MAX_LEFT) {
-					totalX = MAX_LEFT;
-				} else if (totalX > MAX_RIGHT) {
-					totalX = MAX_RIGHT;
-				}
-				if (totalY < MAX_TOP) {
-					totalY = MAX_TOP;
-				} else if (totalY > MAX_BOTTOM) {
-					totalY = MAX_BOTTOM;
-				}
 				g.translate(-totalX, -totalY);
 			} else {
 				camX += dx;
 				camY += dy;
-				if (camX < MAX_LEFT) {
-					camX = MAX_LEFT;
-				} else if (camX > MAX_RIGHT) {
-					camX = MAX_RIGHT;
-				}
-				if (camY < MAX_TOP) {
-					camY = MAX_TOP;
-				} else if (camY > MAX_BOTTOM) {
-					camY = MAX_BOTTOM;
-				}
 				dx = 0;
 				dy = 0;
 				g.translate(-camX, -camY);

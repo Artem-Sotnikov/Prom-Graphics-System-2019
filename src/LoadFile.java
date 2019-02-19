@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class LoadFile {
-	private String fileName;
+	private String fileName = "src/savefiles/savefile.txt";
 	private SaveFile saveFile;
 	
 	public LoadFile(String filename) {
@@ -20,7 +20,8 @@ public class LoadFile {
 			o.close();
 			f.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Error loading file.");
+			System.exit(0);
 		}
 	}
 	
@@ -32,7 +33,8 @@ public class LoadFile {
 			o.close();
 			f.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Error saving file.");
+			System.exit(0);
 		}
 	}
 
