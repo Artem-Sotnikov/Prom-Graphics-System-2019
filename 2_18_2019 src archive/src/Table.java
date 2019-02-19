@@ -14,13 +14,11 @@ public class Table {
 		rList.add(new Student("Fanny"));
 		rList.add(new Student("Nate"));
 		rList.add(new Student("Lloyd"));
-		rList.add(new Student("Ken"));
-		rList.add(new Student("Sarah"));
 		
 		return rList;
 	}
 	
 	public int getSize() {		
-		return 12;
+		return 18;
 	}
 }
