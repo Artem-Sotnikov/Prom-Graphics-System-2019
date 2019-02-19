@@ -5,9 +5,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import javax.swing.filechooser.FileNameExtensionFilter;
 import static constant.Constants.*;
 
 public class FloorPlan extends JFrame {
@@ -15,7 +16,7 @@ public class FloorPlan extends JFrame {
 
 	private Display disp;
 	private SidePanel sidePnl;
-	private ArrayList<DispRectangle> tableShapes;
+	private ArrayList<DispTable> tableShapes;
 	private ArrayList<DispStudent> studentShapes;
 
 	private int MAX_TOP = 0;
@@ -32,7 +33,7 @@ public class FloorPlan extends JFrame {
 	private DispStudent focusedStudent;
 	private DispTable focusedTable;
 
-	private LoadFile loadFile = new LoadFile();
+	private LoadFile loadFile = new LoadFile("src/savefiles/savefile.txt");
 
 	public FloorPlan() {
 		super("Floor Plan");
@@ -51,7 +52,7 @@ public class FloorPlan extends JFrame {
 
 		this.requestFocusInWindow();
 
-		this.tableShapes = new ArrayList<DispRectangle>(0);
+		this.tableShapes = new ArrayList<DispTable>(0);
 		this.studentShapes = new ArrayList<DispStudent>(0);
 
 		selectedStudent = new DispCircle();
@@ -74,16 +75,28 @@ public class FloorPlan extends JFrame {
 		this.dispose();
 	}
 
-	public void loadShapesFromFile() {
-		loadFile.loadShapes();
-		tableShapes = loadFile.getTableList();
-		studentShapes = loadFile.getStudentList();
+	public void load() {
+		chooseFile();
+		loadFile.load();
+		SaveFile saveFile = loadFile.getSaveFile();
+		tableShapes = saveFile.getTableList();
+		studentShapes = saveFile.getStudentList();
 	}
 
-	public void saveShapesToFile() {
-		loadFile.setTableList(this.tableShapes);
-		loadFile.setStudentList(this.studentShapes);
-		loadFile.saveShapes();
+	public void save() {
+		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
+		loadFile.save();
+	}
+	
+	public void chooseFile() {
+		JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+        	String fileName = chooser.getSelectedFile().getPath();
+        	this.loadFile = new LoadFile(fileName);
+        }
 	}
 
 	public void generateFloorPlan(ArrayList<Table> tables) {
@@ -262,11 +275,8 @@ public class FloorPlan extends JFrame {
 	}
 
 	private class SidePanel extends JPanel {
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
+		
 		final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
 		final DispRectangle loadButton2 = new DispRectangle(10,60,100,40);
 		final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
@@ -480,9 +490,11 @@ public class FloorPlan extends JFrame {
 
 					// click save or load button
 					if (sidePnl.saveButtonPending()) {
-						saveShapesToFile();
+						save();
+						sidePnl.handleAll();
 					} else if (sidePnl.loadButtonPending()) {
-						loadShapesFromFile();
+						load();
+						sidePnl.handleAll();
 					}
 
 					if (this.state == UIState.STATE_VIEWING) {
