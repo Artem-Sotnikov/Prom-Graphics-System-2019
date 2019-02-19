@@ -1,6 +1,9 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Table {
+public class Table implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public ArrayList<Student> getStudents() {
 		ArrayList<Student> rList = new ArrayList<Student>(0);
 

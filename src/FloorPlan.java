@@ -5,793 +5,802 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import javax.swing.filechooser.FileNameExtensionFilter;
 import static constant.Constants.*;
 
 public class FloorPlan extends JFrame {
-	private static final long serialVersionUID = 1L;
+ private static final long serialVersionUID = 1L;
+
+ private Display disp;
+ private SidePanel sidePnl;
+ private ArrayList<DispTable> tableShapes;
+ private ArrayList<DispStudent> studentShapes;
+
+ private int MAX_TOP = 0;
+ private int MAX_LEFT = 0;
+ private int MAX_BOTTOM = 2000;
+ private int MAX_RIGHT = 2000;
+
+ final DispRectangle backButton = new DispRectangle(10,10,100,40);
+ final DispRectangle saveButton = new DispRectangle(SCALE_FACTOR*10,10,100,40);
+ final DispRectangle loadButton = new DispRectangle(SCALE_FACTOR*10 + 110,10,100,40);
+ final DispRectangle switchButton = new DispRectangle(10,60,100,40);
+
+ private DispStudent selectedStudent;
+ private int selectedStudentIdx;
+ private DispTable selectedTable;
+ private int selectedTableIdx;
+ 
+ private DispStudent focusedStudent;
+ private DispTable focusedTable;
+
+ private LoadFile loadFile = new LoadFile("src/savefiles/savefile.txt");
+
+ public FloorPlan() {
+  super("Floor Plan");
+  this.disp = new Display();
+  this.sidePnl = new SidePanel();
+
+  Dimension sideBarSize = new Dimension(200,(int) SCREEN_SIZE.getHeight());
+
+  sidePnl.setPreferredSize(sideBarSize);
+  sidePnl.setBackground(DARK_GRAY); 
+
+  this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  this.add(this.disp, BorderLayout.CENTER);
+  this.add(sidePnl,BorderLayout.WEST);
+  this.setSize((int)SCREEN_SIZE.getWidth(),(int)SCREEN_SIZE.getHeight());
+
+  this.requestFocusInWindow();
+
+  this.tableShapes = new ArrayList<DispTable>(0);
+  this.studentShapes = new ArrayList<DispStudent>(0);
+
+  selectedStudent = new DispStudent();
+  selectedTable = new DispTable();
+
+  focusedStudent = new DispStudent();
+  focusedTable = new DispTable();
+ }
+
+ public void displayFloorPlan() {
+
+  this.setVisible(true);
+
+  while (true) {  
+   this.disp.repaint();
+   this.sidePnl.repaint();
+  }  
+ }
 
-	private Display disp;
-	private SidePanel sidePnl;
-	private ArrayList<DispRectangle> tableShapes;
-	private ArrayList<DispStudent> studentShapes;
+ public void exit() {
+  this.dispose();
+ }
 
-	private int MAX_TOP = 0;
-	private int MAX_LEFT = 0;
-	private int MAX_BOTTOM = 2000;
-	private int MAX_RIGHT = 2000;
+ public void load() {
+  chooseFile();
+  loadFile.load();
+  SaveFile saveFile = loadFile.getSaveFile();
+  tableShapes = saveFile.getTableList();
+  studentShapes = saveFile.getStudentList();
+ }
 
-	final DispRectangle backButton = new DispRectangle(10,10,100,40);
-	final DispRectangle saveButton = new DispRectangle(SCALE_FACTOR*10,10,100,40);
-	final DispRectangle loadButton = new DispRectangle(SCALE_FACTOR*10 + 110,10,100,40);
-	final DispRectangle switchButton = new DispRectangle(10,60,100,40);
+ public void save() {
+  loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
+  loadFile.save();
+ }
+ 
+ public void chooseFile() {
+  JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+         String fileName = chooser.getSelectedFile().getPath();
+         this.loadFile = new LoadFile(fileName);
+        }
+ }
 
-	private DispStudent selectedStudent;
-	private int selectedStudentIdx;
-	private DispTable selectedTable;
-	private int selectedTableIdx;
-	
-	private DispStudent focusedStudent;
-	private DispTable focusedTable;
+ public void generateFloorPlan(ArrayList<Table> tables) {
 
-	private LoadFile loadFile = new LoadFile();
+  int tableSize = tables.get(0).getSize(); 
 
-	public FloorPlan() {
-		super("Floor Plan");
-		this.disp = new Display();
-		this.sidePnl = new SidePanel();
+  this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
+  //System.out.println(MAX_RIGHT);
+  this.MAX_BOTTOM = this.MAX_RIGHT;
 
-		Dimension sideBarSize = new Dimension(200,(int) SCREEN_SIZE.getHeight());
 
-		sidePnl.setPreferredSize(sideBarSize);
-		sidePnl.setBackground(DARK_GRAY); 
+  double determinedX = 0;
+  double determinedY = 0;
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.add(this.disp, BorderLayout.CENTER);
-		this.add(sidePnl,BorderLayout.WEST);
-		this.setSize((int)SCREEN_SIZE.getWidth(),(int)SCREEN_SIZE.getHeight());
+  for (int i = 0; i < tables.size(); i++) {
+   DispTable tableCreation = new DispTable();
 
-		this.requestFocusInWindow();
+   tableCreation.setReal(true);
+   tableCreation.setOriginalTable(tables.get(i));
 
-		this.tableShapes = new ArrayList<DispRectangle>(0);
-		this.studentShapes = new ArrayList<DispStudent>(0);
+   tableCreation.setHeight(2*SCALE_FACTOR);
+   tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
 
-		selectedStudent = new DispStudent();
-		selectedTable = new DispTable();
+   if (i == 0) {
+    determinedX = SCALE_FACTOR*10;
+    determinedY = 100;
+   } else {
+    determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
+    determinedY = tableShapes.get(i - 1).getY();
+    //System.out.println(determinedX);
+    if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
+     determinedX = SCALE_FACTOR*10;
+     determinedY = determinedY + SCALE_FACTOR*6;
+    }
+   }
 
-		focusedStudent = new DispStudent();
-		focusedTable = new DispTable();
-	}
+   tableCreation.setX(determinedX);
+   tableCreation.setY(determinedY);
 
-	public void displayFloorPlan() {
+   tableShapes.add(tableCreation);
 
-		this.setVisible(true);
+   for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
+    DispStudent studentCreation = new DispStudent();
 
-		while (true) {  
-			this.disp.repaint();
-			this.sidePnl.repaint();
-		}  
-	}
+    studentCreation.setReal(true);
 
-	public void exit() {
-		this.dispose();
-	}
+    studentCreation.setRadius(SCALE_FACTOR - 2);
 
-	public void loadShapesFromFile() {
-		loadFile.loadShapes();
-		tableShapes = loadFile.getTableList();
-		studentShapes = loadFile.getStudentList();
-	}
+    if (j < (tableSize/2)) {     
+     studentCreation.setX(determinedX + SCALE_FACTOR*j);
+     studentCreation.setY(determinedY - SCALE_FACTOR - OFFSET_FACTOR);
+    } else {
+     studentCreation.setX(determinedX + SCALE_FACTOR*(j - (tableSize/2)));
+     studentCreation.setY(determinedY + SCALE_FACTOR*2 + OFFSET_FACTOR);
+    }
 
-	public void saveShapesToFile() {
-		loadFile.setTableList(this.tableShapes);
-		loadFile.setStudentList(this.studentShapes);
-		loadFile.saveShapes();
-	}
+    studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
+    studentShapes.add(studentCreation);
+   }
+  }
 
-	public void generateFloorPlan(ArrayList<Table> tables) {
+  boolean boardExhausted = false;
 
-		int tableSize = tables.get(0).getSize(); 
+  while (!boardExhausted) {   
 
-		this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
-		//System.out.println(MAX_RIGHT);
-		this.MAX_BOTTOM = this.MAX_RIGHT;
+   DispTable tableCreation = new DispTable();
 
+   tableCreation.setReal(false);
 
-		double determinedX = 0;
-		double determinedY = 0;
+   tableCreation.setHeight(2*SCALE_FACTOR);
+   tableCreation.setWidth(tableSize*SCALE_FACTOR/2);   
 
-		for (int i = 0; i < tables.size(); i++) {
-			DispTable tableCreation = new DispTable();
 
-			tableCreation.setReal(true);
-			tableCreation.setOriginalTable(tables.get(i));
+   determinedX = tableShapes.get(tableShapes.size() - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
+   determinedY = tableShapes.get(tableShapes.size() - 1).getY();
+   if (determinedX > MAX_RIGHT - 100 - tableSize*SCALE_FACTOR/2) {
+    determinedX = SCALE_FACTOR*10;
+    determinedY = determinedY + SCALE_FACTOR*6;
+   }
 
-			tableCreation.setHeight(2*SCALE_FACTOR);
-			tableCreation.setWidth(tableSize*SCALE_FACTOR/2); 
 
-			if (i == 0) {
-				determinedX = SCALE_FACTOR*10;
-				determinedY = 100;
-			} else {
-				determinedX = tableShapes.get(i - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
-				determinedY = tableShapes.get(i - 1).getY();
-				//System.out.println(determinedX);
-				if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
-					determinedX = SCALE_FACTOR*10;
-					determinedY = determinedY + SCALE_FACTOR*6;
-				}
-			}
+   tableCreation.setX(determinedX);
+   tableCreation.setY(determinedY);
 
-			tableCreation.setX(determinedX);
-			tableCreation.setY(determinedY);
+   //System.out.println(determinedY);
 
-			tableShapes.add(tableCreation);
+   if (determinedY > (MAX_BOTTOM - SCALE_FACTOR*10)) {
+    boardExhausted = true;
+   } else {
+    tableShapes.add(tableCreation);
+   }
 
-			for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
-				DispStudent studentCreation = new DispStudent();
 
-				studentCreation.setReal(true);
+  }
 
-				studentCreation.setRadius(SCALE_FACTOR - 2);
+ }
 
-				if (j < (tableSize/2)) {     
-					studentCreation.setX(determinedX + SCALE_FACTOR*j);
-					studentCreation.setY(determinedY - SCALE_FACTOR - OFFSET_FACTOR);
-				} else {
-					studentCreation.setX(determinedX + SCALE_FACTOR*(j - (tableSize/2)));
-					studentCreation.setY(determinedY + SCALE_FACTOR*2 + OFFSET_FACTOR);
-				}
+ public void generateFloorPlan(ArrayList<Table> tables, String config) {
+  if (config == "ROUND TABLES") {
+   int tableSize = tables.get(0).getSize(); 
+   int distToNextTable = tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 
-				studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
-				studentShapes.add(studentCreation);
-			}
-		}
+   this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
+   //System.out.println(MAX_RIGHT);
+   this.MAX_BOTTOM = this.MAX_RIGHT;
 
-		boolean boardExhausted = false;
+   double determinedX = 0;
+   double determinedY = 0;
 
-		while (!boardExhausted) {   
+   boolean offset = false;
 
-			DispTable tableCreation = new DispTable();
+   for (int i = 0; i < tables.size(); i++) {
+    DispTable tableCreation = new DispTable();
 
-			tableCreation.setReal(false);
+    tableCreation.setReal(true);
+    tableCreation.setRound(true);
+    tableCreation.setOriginalTable(tables.get(i));
 
-			tableCreation.setHeight(2*SCALE_FACTOR);
-			tableCreation.setWidth(tableSize*SCALE_FACTOR/2);   
+    tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
+    tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
 
+    if (i == 0) {
+     determinedX = SCALE_FACTOR*10;
+     determinedY = 100;
+    } else {
+     determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
+     determinedY = tableShapes.get(i - 1).getY();
 
-			determinedX = tableShapes.get(tableShapes.size() - 1).getX() + tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
-			determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-			if (determinedX > MAX_RIGHT - 100 - tableSize*SCALE_FACTOR/2) {
-				determinedX = SCALE_FACTOR*10;
-				determinedY = determinedY + SCALE_FACTOR*6;
-			}
+     //System.out.println(determinedX);
 
+     if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
+      determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
+      determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
 
-			tableCreation.setX(determinedX);
-			tableCreation.setY(determinedY);
+      if (offset) {
+       determinedX = SCALE_FACTOR*10;
+       offset = false;
+      } else {
+       offset = true;
+      }
 
-			//System.out.println(determinedY);
+     }
 
-			if (determinedY > (MAX_BOTTOM - SCALE_FACTOR*10)) {
-				boardExhausted = true;
-			} else {
-				tableShapes.add(tableCreation);
-			}
+    }
 
+    tableCreation.setX(determinedX);
+    tableCreation.setY(determinedY);
 
-		}
+    tableShapes.add(tableCreation);
 
-	}
+    double tableCenterX = determinedX + tableCreation.getHeight()/2;
+    double tableCenterY = determinedY + tableCreation.getHeight()/2;
 
-	public void generateFloorPlan(ArrayList<Table> tables, String config) {
-		if (config == "ROUND TABLES") {
-			int tableSize = tables.get(0).getSize(); 
-			int distToNextTable = tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 
-			this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
-			//System.out.println(MAX_RIGHT);
-			this.MAX_BOTTOM = this.MAX_RIGHT;
+    for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
+     DispStudent studentCreation = new DispStudent();
 
-			double determinedX = 0;
-			double determinedY = 0;
+     studentCreation.setReal(true);
 
-			boolean offset = false;
+     studentCreation.setRadius(SCALE_FACTOR - 2);
 
-			for (int i = 0; i < tables.size(); i++) {
-				DispTable tableCreation = new DispTable();
+     double currentAngle = j*2*Math.PI/tableSize; 
+     //System.out.println(currentAngle);
 
-				tableCreation.setReal(true);
-				tableCreation.setRound(true);
-				tableCreation.setOriginalTable(tables.get(i));
+     studentCreation.setX(tableCenterX + tableCreation.getHeight()*Math.cos(currentAngle)/1.4 
+       - studentCreation.getRadius()/2);
+     studentCreation.setY(tableCenterY + tableCreation.getHeight()*Math.sin(currentAngle)/1.4
+       - studentCreation.getRadius()/2);
 
-				tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
-				tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
 
-				if (i == 0) {
-					determinedX = SCALE_FACTOR*10;
-					determinedY = 100;
-				} else {
-					determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
-					determinedY = tableShapes.get(i - 1).getY();
+     studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
+     studentShapes.add(studentCreation);
+    }
+   }
+   
+   boolean boardExhausted = false;
 
-					//System.out.println(determinedX);
+   while (!boardExhausted) {   
 
-					if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/2)) {
-						determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
-						determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
+    DispTable tableCreation = new DispTable();
 
-						if (offset) {
-							determinedX = SCALE_FACTOR*10;
-							offset = false;
-						} else {
-							offset = true;
-						}
+    tableCreation.setReal(false);
+    tableCreation.setRound(true);
 
-					}
+    tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
+    tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
 
-				}
+    determinedX = tableShapes.get(tableShapes.size() - 1).getX() + distToNextTable;
+    determinedY = tableShapes.get(tableShapes.size() - 1).getY();
+    if (determinedX > MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/3) {
+     determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
+     determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
 
-				tableCreation.setX(determinedX);
-				tableCreation.setY(determinedY);
+     if (offset) {
+      determinedX = SCALE_FACTOR*10;
+      offset = false;
+     } else {
+      offset = true;
+     }
+    }
 
-				tableShapes.add(tableCreation);
 
-				double tableCenterX = determinedX + tableCreation.getHeight()/2;
-				double tableCenterY = determinedY + tableCreation.getHeight()/2;
+    tableCreation.setX(determinedX);
+    tableCreation.setY(determinedY);
 
+    //System.out.println(determinedY);
 
-				for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
-					DispStudent studentCreation = new DispStudent();
+    if (determinedY > (MAX_BOTTOM - SCALE_FACTOR*10)) {
+     boardExhausted = true;
+    } else {
+     tableShapes.add(tableCreation);
+    }
 
-					studentCreation.setReal(true);
 
-					studentCreation.setRadius(SCALE_FACTOR - 2);
+   }
+  }
+ }
 
-					double currentAngle = j*2*Math.PI/tableSize; 
-					//System.out.println(currentAngle);
+ private class SidePanel extends JPanel {
+  private static final long serialVersionUID = 1L;
+  
+  final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
+  final DispRectangle loadButton2 = new DispRectangle(10,60,100,40);
+  final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
+  final DispRectangle switchButton2 = new DispRectangle(10,160,100,40); 
 
-					studentCreation.setX(tableCenterX + tableCreation.getHeight()*Math.cos(currentAngle)/1.4 
-							- studentCreation.getRadius()/2);
-					studentCreation.setY(tableCenterY + tableCreation.getHeight()*Math.sin(currentAngle)/1.4
-							- studentCreation.getRadius()/2);
+  private boolean loadButtonState;
+  private boolean saveButtonState;
+  private boolean backButtonState;
+  private boolean switchButtonState;
 
+  private boolean clickPending;
 
-					studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
-					studentShapes.add(studentCreation);
-				}
-			}
-			
-			boolean boardExhausted = false;
+  private MyMouseListener mouseListener2;
 
-			while (!boardExhausted) {   
+  public SidePanel() {
+   this.mouseListener2 = new MyMouseListener();
+   this.addMouseListener(this.mouseListener2);
+   this.addMouseMotionListener(this.mouseListener2);
+   this.addMouseWheelListener(this.mouseListener2);
 
-				DispTable tableCreation = new DispTable();
+   this.handleAll();
+  }
 
-				tableCreation.setReal(false);
-				tableCreation.setRound(true);
+  public boolean anyPending() {
+   return this.clickPending;
+  }
 
-				tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
-				tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
+  public boolean loadButtonPending() {
+   return this.loadButtonState;
+  }
 
-				determinedX = tableShapes.get(tableShapes.size() - 1).getX() + distToNextTable;
-				determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-				if (determinedX > MAX_RIGHT - SCALE_FACTOR*10 - tableSize*SCALE_FACTOR/3) {
-					determinedX = SCALE_FACTOR*10 + distToNextTable*(Math.cos(60*Math.PI/180));
-					determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
+  public boolean saveButtonPending() {
+   return this.saveButtonState; 
+  }
 
-					if (offset) {
-						determinedX = SCALE_FACTOR*10;
-						offset = false;
-					} else {
-						offset = true;
-					}
-				}
+  public boolean backButtonPending() {
+   return this.backButtonState;
+  }
 
+  public boolean switchButtonPending() {
+   return this.switchButtonState;
+  }
 
-				tableCreation.setX(determinedX);
-				tableCreation.setY(determinedY);
+  public void handleAll() {
+   this.clickPending = false;
 
-				//System.out.println(determinedY);
+   this.loadButtonState = false;
+   this.saveButtonState = false;
+   this.backButtonState = false;
+   this.switchButtonState = false;
+  }
 
-				if (determinedY > (MAX_BOTTOM - SCALE_FACTOR*10)) {
-					boardExhausted = true;
-				} else {
-					tableShapes.add(tableCreation);
-				}
+  public void paintComponent (Graphics g) {
+   super.paintComponent(g);
+   setDoubleBuffered(true);
 
+   loadButton2.draw(g,Color.CYAN);
+   saveButton2.draw(g,Color.CYAN);
 
-			}
-		}
-	}
+   g.setColor(Color.BLACK);
+   g.drawString("SAVE",(int)saveButton2.getX() + OFFSET_FACTOR,(int)saveButton2.getY() + OFFSET_FACTOR*3);
+   g.drawString("LOAD",(int)loadButton2.getX() + OFFSET_FACTOR,(int)loadButton2.getY() + OFFSET_FACTOR*3);
 
-	private class SidePanel extends JPanel {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
-		final DispRectangle loadButton2 = new DispRectangle(10,60,100,40);
-		final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
-		final DispRectangle switchButton2 = new DispRectangle(10,160,100,40); 
+   if (disp.getUIState() != UIState.STATE_VIEWING) {    
+    backButton2.draw(g,Color.YELLOW);
+    g.setColor(Color.BLACK);
+    g.drawString("BACK",(int)backButton2.getX() + OFFSET_FACTOR,(int)backButton2.getY() + OFFSET_FACTOR*3);
+   }
 
-		private boolean loadButtonState;
-		private boolean saveButtonState;
-		private boolean backButtonState;
-		private boolean switchButtonState;
+   if ((disp.getUIState() == UIState.STATE_STUDENT_SELECTED) || (disp.getUIState() == UIState.STATE_TABLE_SELECTED)) {
+    switchButton2.draw(g,Color.GREEN);
+    g.setColor(Color.BLACK);
+    g.drawString("SWITCH WITH",(int)switchButton2.getX() + OFFSET_FACTOR,(int)switchButton2.getY() + OFFSET_FACTOR*3);
+   }
+   
+   g.setColor(Color.WHITE);
+   g.fillRect(5,400 - OFFSET_FACTOR*3,190,2000);
+   
+   g.setColor(Color.BLACK);
 
-		private boolean clickPending;
+   
+   
+   if (focusedStudent.isHovered()) {
+    Student dataStudent = focusedStudent.getOriginalStudent();
 
-		private MyMouseListener mouseListener2;
+    g.drawString("Student Name: " + dataStudent.getName(),10,400);
 
-		public SidePanel() {
-			this.mouseListener2 = new MyMouseListener();
-			this.addMouseListener(this.mouseListener2);
-			this.addMouseMotionListener(this.mouseListener2);
-			this.addMouseWheelListener(this.mouseListener2);
+   } else if (focusedTable.isHovered()) {
+    if (focusedTable.isReal()) {
+     Table dataTable = focusedTable.getOriginalTable();
 
-			this.handleAll();
-		}
 
-		public boolean anyPending() {
-			return this.clickPending;
-		}
+     g.drawString("Table size: " + Integer.toString(dataTable.getSize()),10,400);
+    }
+   }
 
-		public boolean loadButtonPending() {
-			return this.loadButtonState;
-		}
+   if (mouseListener2.clickPending())  {
+    Point clickPos = mouseListener2.getClick();       
 
-		public boolean saveButtonPending() {
-			return this.saveButtonState; 
-		}
+    this.clickPending = true;
 
-		public boolean backButtonPending() {
-			return this.backButtonState;
-		}
+    mouseListener2.clickHandled();
 
-		public boolean switchButtonPending() {
-			return this.switchButtonState;
-		}
+    if (backButton2.getBoundingBox().contains(clickPos)) {
+     this.backButtonState = true;     
+    } else if (switchButton2.getBoundingBox().contains(clickPos)) {
+     this.switchButtonState = true;
+    } else if (saveButton2.getBoundingBox().contains(clickPos)) {
+     this.saveButtonState = true;
+    } else if (loadButton2.getBoundingBox().contains(clickPos)) {
+     this.loadButtonState = true;
+    }
+   }
+  }
+ }
 
-		public void handleAll() {
-			this.clickPending = false;
+ private class Display extends JPanel {
+  private static final long serialVersionUID = 1L;
 
-			this.loadButtonState = false;
-			this.saveButtonState = false;
-			this.backButtonState = false;
-			this.switchButtonState = false;
-		}
+  private UIState state;
+  private MyMouseListener mouseListener;
+  private int camX = 0;
+  private int camY = 0;
+  private int dx = 0;
+  private int dy = 0;
 
-		public void paintComponent (Graphics g) {
-			super.paintComponent(g);
-			setDoubleBuffered(true);
+  public Display() {
+   this.mouseListener = new MyMouseListener();
+   this.addMouseListener(this.mouseListener);
+   this.addMouseMotionListener(this.mouseListener);
+   this.addMouseWheelListener(this.mouseListener);
+   this.setBackground(LIGHT_GRAY); 
 
-			loadButton2.draw(g,Color.CYAN);
-			saveButton2.draw(g,Color.CYAN);
+   this.state = UIState.STATE_VIEWING;
 
-			g.setColor(Color.BLACK);
-			g.drawString("SAVE",(int)saveButton2.getX() + OFFSET_FACTOR,(int)saveButton2.getY() + OFFSET_FACTOR*3);
-			g.drawString("LOAD",(int)loadButton2.getX() + OFFSET_FACTOR,(int)loadButton2.getY() + OFFSET_FACTOR*3);
+  }
 
+  public void paintComponent(Graphics g) {
+   super.paintComponent(g);
+   setDoubleBuffered(true);
 
-			if (disp.getUIState() != UIState.STATE_VIEWING) {	   
-				backButton2.draw(g,Color.YELLOW);
-				g.setColor(Color.BLACK);
-				g.drawString("BACK",(int)backButton2.getX() + OFFSET_FACTOR,(int)backButton2.getY() + OFFSET_FACTOR*3);
-			}
+   updateCamera(g);
 
-			if ((disp.getUIState() == UIState.STATE_STUDENT_SELECTED) || (disp.getUIState() == UIState.STATE_TABLE_SELECTED)) {
-				switchButton2.draw(g,Color.GREEN);
-				g.setColor(Color.BLACK);
-				g.drawString("SWITCH WITH",(int)switchButton2.getX() + OFFSET_FACTOR,(int)switchButton2.getY() + OFFSET_FACTOR*3);
-			}
-			
-			g.setColor(Color.WHITE);
-			g.fillRect(5,400 - OFFSET_FACTOR*3,190,2000);
-			
-			g.setColor(Color.BLACK);
+   //Draws borders
+   g.fillRect(MAX_LEFT + 5,MAX_TOP + 5,MAX_RIGHT - 10,5);
+   g.fillRect(MAX_LEFT + 5,MAX_TOP + 5,5,MAX_BOTTOM - 10);
+   g.fillRect(MAX_LEFT + 10,MAX_BOTTOM - 10,MAX_RIGHT - 20,5);
+   g.fillRect(MAX_RIGHT - 10,MAX_TOP + 5,5,MAX_BOTTOM - 10);
 
-			
-			
-			if (focusedStudent.isHovered()) {
-				Student dataStudent = focusedStudent.getOriginalStudent();
+   //
 
-				g.drawString("Student Name: " + dataStudent.getName(),10,400);
+   for (int i = 0; i < studentShapes.size(); i++) {
+    studentShapes.get(i).drawObject(g);    
+   }
 
-			} else if (focusedTable.isHovered()) {
-				if (focusedTable.isReal()) {
-					Table dataTable = focusedTable.getOriginalTable();
+   for (int i = 0; i < tableShapes.size(); i++) {
+    ((DispTable) tableShapes.get(i)).drawObject(g);
+   }
 
+   Point mousePos = this.mouseListener.getPos();
+   mousePos.x = (int) (mousePos.x * mouseListener.getZoomScale() + camX);
+   mousePos.y = (int) (mousePos.y * mouseListener.getZoomScale() + camY);
 
-					g.drawString("Table size: " + Integer.toString(dataTable.getSize()),10,400);
-				}
-			}
+   boolean studentHovered = false;
 
-			if (mouseListener2.clickPending())  {
-				Point clickPos = mouseListener2.getClick();       
+   // Table hover is set and text box displayed directly
+   if (mouseListener.isDragging() == false) {
+    for (int i = 0; i < tableShapes.size(); i++) {
+     if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
 
-				this.clickPending = true;
+      tableShapes.get(i).setHovered(true);
+      ((DispTable) tableShapes.get(i)).drawBox(g,i);
 
-				mouseListener2.clickHandled();
+      focusedTable = (DispTable) tableShapes.get(i);
+      focusedStudent.setHovered(false);
+      studentHovered = true;
 
-				if (backButton2.getBoundingBox().contains(clickPos)) {
-					this.backButtonState = true;					
-				} else if (switchButton2.getBoundingBox().contains(clickPos)) {
-					this.switchButtonState = true;
-				} else if (saveButton2.getBoundingBox().contains(clickPos)) {
-					this.saveButtonState = true;
-				} else if (loadButton2.getBoundingBox().contains(clickPos)) {
-					this.loadButtonState = true;
-				}
-			}
-		}
-	}
+     } else {
+      tableShapes.get(i).setHovered(false); 
+     }
+    }
 
-	private class Display extends JPanel {
-		private static final long serialVersionUID = 1L;
+    // Student hover is set and text box displayed directly
+    if (!studentHovered) {
+     if (mouseListener.isDragging() == false) {
+      for (int i = 0; i < studentShapes.size(); i++) {
+       if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
 
-		private UIState state;
-		private MyMouseListener mouseListener;
-		private int camX = 0;
-		private int camY = 0;
-		private int dx = 0;
-		private int dy = 0;
+        studentShapes.get(i).setHovered(true);
+        studentShapes.get(i).drawBox(g); 
 
-		public Display() {
-			this.mouseListener = new MyMouseListener();
-			this.addMouseListener(this.mouseListener);
-			this.addMouseMotionListener(this.mouseListener);
-			this.addMouseWheelListener(this.mouseListener);
-			this.setBackground(LIGHT_GRAY); 
+        focusedStudent = studentShapes.get(i);
+        focusedTable.setHovered(false);
 
-			this.state = UIState.STATE_VIEWING;
+       } else {
+        studentShapes.get(i).setHovered(false); 
+       }
+      }
+     }
+    }
 
-			switchButton.setPrivateColor(Color.ORANGE);
-			backButton.setPrivateColor(Color.YELLOW);
+    if ((mouseListener.clickPending()) || (sidePnl.anyPending()))  {
+     Point clickPos = mouseListener.getClick();
+     clickPos.x += camX;
+     clickPos.y += camY;
+     mouseListener.clickHandled();  
 
-		}
+     if (sidePnl.anyPending()) {
+      clickPos = new Point(0,0);
+     }
 
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			setDoubleBuffered(true);
+     // click save or load button
+     if (sidePnl.saveButtonPending()) {
+      save();
+      sidePnl.handleAll();
+     } else if (sidePnl.loadButtonPending()) {
+      load();
+      sidePnl.handleAll();
+     }
 
-			updateCamera(g);
+     if (this.state == UIState.STATE_VIEWING) {
+      for (int i = 0; i < studentShapes.size(); i++) {
+       if (studentShapes.get(i).getBoundingBox().contains(clickPos)) {
 
-			//Draws borders
-			g.fillRect(MAX_LEFT + 5,MAX_TOP + 5,MAX_RIGHT - 10,5);
-			g.fillRect(MAX_LEFT + 5,MAX_TOP + 5,5,MAX_BOTTOM - 10);
-			g.fillRect(MAX_LEFT + 10,MAX_BOTTOM - 10,MAX_RIGHT - 20,5);
-			g.fillRect(MAX_RIGHT - 10,MAX_TOP + 5,5,MAX_BOTTOM - 10);
+        this.state = UIState.STATE_STUDENT_SELECTED;
 
-			//
+        studentShapes.get(i).setSelected(true);
+        selectedStudent = studentShapes.get(i);
+        selectedStudentIdx = i;
 
-			for (int i = 0; i < studentShapes.size(); i++) {
-				studentShapes.get(i).drawObject(g);    
-			}
+       }
+      }
 
-			for (int i = 0; i < tableShapes.size(); i++) {
-				((DispTable) tableShapes.get(i)).drawObject(g);
-			}
+      for (int i = 0; i < tableShapes.size(); i++) {
+       if (tableShapes.get(i).getBoundingBox().contains(clickPos)) {
 
-			Point mousePos = this.mouseListener.getPos();
-			mousePos.x = (int) (mousePos.x * mouseListener.getZoomScale() + camX);
-			mousePos.y = (int) (mousePos.y * mouseListener.getZoomScale() + camY);
+        this.state = UIState.STATE_TABLE_SELECTED;
 
-			boolean studentHovered = false;
+        tableShapes.get(i).setSelected(true);        
+        selectedTable = (DispTable) tableShapes.get(i);
+        selectedTableIdx = i;
 
-			// Table hover is set and text box displayed directly
-			if (mouseListener.isDragging() == false) {
-				for (int i = 0; i < tableShapes.size(); i++) {
-					if (tableShapes.get(i).getBoundingBox().contains(mousePos)) {
+       }
+      }
 
-						tableShapes.get(i).setHovered(true);
-						((DispTable) tableShapes.get(i)).drawBox(g,i);
+     } else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
 
-						focusedTable = (DispTable) tableShapes.get(i);
-						focusedStudent.setHovered(false);
-						studentHovered = true;
+      //System.out.println(Boolean.toString(sidePnl.backButtonPending()));
 
-					} else {
-						tableShapes.get(i).setHovered(false); 
-					}
-				}
+      if (sidePnl.backButtonPending()) {       
 
-				// Student hover is set and text box displayed directly
-				if (!studentHovered) {
-					if (mouseListener.isDragging() == false) {
-						for (int i = 0; i < studentShapes.size(); i++) {
-							if (studentShapes.get(i).getBoundingBox().contains(mousePos)) {
+       this.state = UIState.STATE_VIEWING;
 
-								studentShapes.get(i).setHovered(true);
-								studentShapes.get(i).drawBox(g); 
+       for (int i = 0; i < studentShapes.size(); i++) {
+        studentShapes.get(i).setSelected(false);
+       }
 
-								focusedStudent = studentShapes.get(i);
-								focusedTable.setHovered(false);
+       for (int i = 0; i < tableShapes.size(); i ++) {
+        tableShapes.get(i).setSelected(false);
+       }
 
-							} else {
-								studentShapes.get(i).setHovered(false); 
-							}
-						}
-					}
-				}
+      } else if (sidePnl.switchButtonPending()) {
 
-				if ((mouseListener.clickPending()) || (sidePnl.anyPending()))  {
-					Point clickPos = mouseListener.getClick();
-					clickPos.x += camX;
-					clickPos.y += camY;
-					mouseListener.clickHandled();  
 
-					if (sidePnl.anyPending()) {
-						clickPos = new Point(0,0);
-					}
+       switch (this.state) {      
+       case STATE_STUDENT_SELECTED:
 
-					// click save or load button
-					if (sidePnl.saveButtonPending()) {
-						saveShapesToFile();
-					} else if (sidePnl.loadButtonPending()) {
-						loadShapesFromFile();
-					}
+        this.state = UIState.STATE_STUDENT_MOVING;
 
-					if (this.state == UIState.STATE_VIEWING) {
-						for (int i = 0; i < studentShapes.size(); i++) {
-							if (studentShapes.get(i).getBoundingBox().contains(clickPos)) {
+        DispRectangle tableSearch = new DispRectangle(selectedStudent.getX() - 10,selectedStudent.getY() - 10,
+          selectedStudent.getRadius() + 20, selectedStudent.getRadius() + 20);
 
-								this.state = UIState.STATE_STUDENT_SELECTED;
 
-								studentShapes.get(i).setSelected(true);
-								selectedStudent = studentShapes.get(i);
-								selectedStudentIdx = i;
+        for (int i = 0; i < tableShapes.size(); i++) {
+         DispRectangle currTable = tableShapes.get(i); 
 
-							}
-						}
+         if (tableSearch.getBoundingBox().intersects(currTable.getBoundingBox())) {
+          i = tableShapes.size();
 
-						for (int i = 0; i < tableShapes.size(); i++) {
-							if (tableShapes.get(i).getBoundingBox().contains(clickPos)) {
+          DispRectangle studentSearch = new DispRectangle(currTable.getX() - 10,currTable.getY() - 10,
+            currTable.getWidth() + 20,currTable.getHeight() + 20);
 
-								this.state = UIState.STATE_TABLE_SELECTED;
+          for (int j = 0; j < studentShapes.size(); j++) {
+           if (studentSearch.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
 
-								tableShapes.get(i).setSelected(true);        
-								selectedTable = (DispTable) tableShapes.get(i);
-								selectedTableIdx = i;
+            studentShapes.get(j).setHighlighted(true);
 
-							}
-						}
+           }           
+          }         
+         }
+        }               
 
-					} else if (this.state == UIState.STATE_STUDENT_SELECTED || this.state == UIState.STATE_TABLE_SELECTED) {
+        break;
+       case STATE_TABLE_SELECTED:
 
-						//System.out.println(Boolean.toString(sidePnl.backButtonPending()));
+        this.state = UIState.STATE_TABLE_MOVING;
 
-						if (sidePnl.backButtonPending()) {       
+        for (int i = 0; i < tableShapes.size(); i++) {
+         tableShapes.get(i).setHighlighted(true);
+        }
+        break;
 
-							this.state = UIState.STATE_VIEWING;
-
-							for (int i = 0; i < studentShapes.size(); i++) {
-								studentShapes.get(i).setSelected(false);
-							}
-
-							for (int i = 0; i < tableShapes.size(); i ++) {
-								tableShapes.get(i).setSelected(false);
-							}
-
-						} else if (sidePnl.switchButtonPending()) {
-
-
-							switch (this.state) {      
-							case STATE_STUDENT_SELECTED:
-
-								this.state = UIState.STATE_STUDENT_MOVING;
-
-								DispRectangle tableSearch = new DispRectangle(selectedStudent.getX() - 10,selectedStudent.getY() - 10,
-										selectedStudent.getRadius() + 20, selectedStudent.getRadius() + 20);
-
-
-								for (int i = 0; i < tableShapes.size(); i++) {
-									DispRectangle currTable = tableShapes.get(i); 
-
-									if (tableSearch.getBoundingBox().intersects(currTable.getBoundingBox())) {
-										i = tableShapes.size();
-
-										DispRectangle studentSearch = new DispRectangle(currTable.getX() - 10,currTable.getY() - 10,
-												currTable.getWidth() + 20,currTable.getHeight() + 20);
-
-										for (int j = 0; j < studentShapes.size(); j++) {
-											if (studentSearch.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
-
-												studentShapes.get(j).setHighlighted(true);
-
-											}           
-										}         
-									}
-								}               
-
-								break;
-							case STATE_TABLE_SELECTED:
-
-								this.state = UIState.STATE_TABLE_MOVING;
-
-								for (int i = 0; i < tableShapes.size(); i++) {
-									tableShapes.get(i).setHighlighted(true);
-								}
-								break;
-
-							default:
-								break;
-							}                 
-						}           
-					} else if (this.state == UIState.STATE_STUDENT_MOVING) {
-
-						
-						for (int i = 0; i < studentShapes.size(); i++) {
-							if (studentShapes.get(i).getBoundingBox().contains(clickPos)) {
-								if (studentShapes.get(i).isHighlighted()) {
-									
-									double futureX = studentShapes.get(i).getX();
-									double futureY = studentShapes.get(i).getY();
-									
-									studentShapes.get(i).setX(selectedStudent.getX());
-									studentShapes.get(i).setY(selectedStudent.getY());
-									
-									studentShapes.get(studentShapes.lastIndexOf(selectedStudent)).setX(futureX);
-									studentShapes.get(studentShapes.lastIndexOf(selectedStudent)).setY(futureY);
-									
-									this.state = UIState.STATE_STUDENT_SELECTED;
-
-									for (int j = 0; j < studentShapes.size(); j++) {
-										studentShapes.get(j).setHighlighted(false);   
-									}
-									
-									
-								}								
-							} 
-						}
-						
-						
-						
-						if (sidePnl.backButtonPending()) {
-
-							this.state = UIState.STATE_STUDENT_SELECTED;
-
-							for (int i = 0; i < studentShapes.size(); i++) {
-								studentShapes.get(i).setHighlighted(false);   
-							}
-						}
-
-					} else if (this.state ==  UIState.STATE_TABLE_MOVING) {
-						System.out.println("Table inital hit!");
-						for (int i = 0; i < tableShapes.size(); i++) {
-							if (tableShapes.get(i).getBoundingBox().contains(clickPos)) {
-								if (tableShapes.get(i).isHighlighted()) {
-									
-									System.out.println("Table hit!");
-									
-									DispRectangle currTable = selectedTable;									
-									DispRectangle futureTable = tableShapes.get(i);
-																																	
-									double dx = futureTable.getX() - 
-											currTable.getX();
-									double dy = futureTable.getY() - 
-											currTable.getY();
-									
-									DispRectangle studentSearch = new DispRectangle(currTable.getX() - 10,currTable.getY() - 10,
-											currTable.getWidth() + 20,currTable.getHeight() + 20);
-
-									for (int j = 0; j < studentShapes.size(); j++) {
-										if (studentSearch.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
-
-											studentShapes.get(j).setHighlighted(true);
-											studentShapes.get(j).setX(studentShapes.get(j).getX() + dx);
-											studentShapes.get(j).setY(studentShapes.get(j).getY() + dy);
-											
-
-										}           
-									}
-									
-									DispRectangle studentSearch2 = new DispRectangle(futureTable.getX() - 10,futureTable.getY() - 10,
-											futureTable.getWidth() + 20,futureTable.getHeight() + 20);
-									
-									for (int j = 0; j < studentShapes.size(); j++) {
-										if (studentSearch2.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
-											if (!(studentShapes.get(j).isHighlighted())) {
-
-												studentShapes.get(j).setX(studentShapes.get(j).getX() - dx);
-												studentShapes.get(j).setY(studentShapes.get(j).getY() - dy);
-												
-											} else {
-												studentShapes.get(j).setHighlighted(false);
-											}
-
-										}           
-									}
-									
-									tableShapes.get(i).setX(currTable.getX());
-									tableShapes.get(i).setY(currTable.getY());
-									
-									tableShapes.get(selectedTableIdx).setX(tableShapes.get(selectedTableIdx).getX() + dx);
-									tableShapes.get(selectedTableIdx).setY(tableShapes.get(selectedTableIdx).getY() + dy);
-									
-									for (int j = 0; j < tableShapes.size(); j++) {
-										tableShapes.get(j).setHighlighted(false);
-									}
-									
-									this.state = UIState.STATE_TABLE_SELECTED;								
-									
-									
-								}								
-							} 
-						}
-						
-						
-						
-						if (sidePnl.backButtonPending()) {
-
-							this.state = UIState.STATE_TABLE_SELECTED;
-
-							for (int i = 0; i < tableShapes.size(); i++) {
-								tableShapes.get(i).setHighlighted(false);   
-							}
-						}
-					} 
-
-					sidePnl.handleAll();
-
-				}
-			} 
-		}
-
-		public void updateCamera(Graphics g) {
-			zooming(g);
-			panning(g);
-		}
-
-		public UIState getUIState() {
-			return this.state;
-		} 
-
-		public void zooming(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g;
-			Dimension d = this.getSize();
-			g2.translate(d.width/2, d.height/2);
-			g2.scale(mouseListener.getZoomScale(), mouseListener.getZoomScale());
-			g2.translate(-d.width/2, -d.height/2);
-		}
-
-		public void panning(Graphics g) {
-			if (mouseListener.isDragging()) {
-				dx = (int) (mouseListener.getReleaseX() - mouseListener.getClick().getX());
-				dy = (int) (mouseListener.getReleaseY() - mouseListener.getClick().getY());
-				int totalX = camX + dx;
-				int totalY = camY + dy;
-				if (totalX < MAX_LEFT) {
-					totalX = MAX_LEFT;
-				} else if (totalX > MAX_RIGHT) {
-					totalX = MAX_RIGHT;
-				}
-				if (totalY < MAX_TOP) {
-					totalY = MAX_TOP;
-				} else if (totalY > MAX_BOTTOM) {
-					totalY = MAX_BOTTOM;
-				}
-				g.translate(-totalX, -totalY);
-			} else {
-				camX += dx;
-				camY += dy;
-				if (camX < MAX_LEFT) {
-					camX = MAX_LEFT;
-				} else if (camX > MAX_RIGHT) {
-					camX = MAX_RIGHT;
-				}
-				if (camY < MAX_TOP) {
-					camY = MAX_TOP;
-				} else if (camY > MAX_BOTTOM) {
-					camY = MAX_BOTTOM;
-				}
-				dx = 0;
-				dy = 0;
-				g.translate(-camX, -camY);
-			}
-		}
-	}
+       default:
+        break;
+       }                 
+      }           
+     } else if (this.state == UIState.STATE_STUDENT_MOVING) {
+
+      
+      for (int i = 0; i < studentShapes.size(); i++) {
+       if (studentShapes.get(i).getBoundingBox().contains(clickPos)) {
+        if (studentShapes.get(i).isHighlighted()) {
+         
+         double futureX = studentShapes.get(i).getX();
+         double futureY = studentShapes.get(i).getY();
+         
+         studentShapes.get(i).setX(selectedStudent.getX());
+         studentShapes.get(i).setY(selectedStudent.getY());
+         
+         studentShapes.get(studentShapes.lastIndexOf(selectedStudent)).setX(futureX);
+         studentShapes.get(studentShapes.lastIndexOf(selectedStudent)).setY(futureY);
+         
+         this.state = UIState.STATE_STUDENT_SELECTED;
+
+         for (int j = 0; j < studentShapes.size(); j++) {
+          studentShapes.get(j).setHighlighted(false);   
+         }
+         
+         
+        }        
+       } 
+      }
+      
+      
+      
+      if (sidePnl.backButtonPending()) {
+
+       this.state = UIState.STATE_STUDENT_SELECTED;
+
+       for (int i = 0; i < studentShapes.size(); i++) {
+        studentShapes.get(i).setHighlighted(false);   
+       }
+      }
+
+     } else if (this.state ==  UIState.STATE_TABLE_MOVING) {
+      System.out.println("Table inital hit!");
+      for (int i = 0; i < tableShapes.size(); i++) {
+       if (tableShapes.get(i).getBoundingBox().contains(clickPos)) {
+        if (tableShapes.get(i).isHighlighted()) {
+         
+         System.out.println("Table hit!");
+         
+         DispRectangle currTable = selectedTable;         
+         DispRectangle futureTable = tableShapes.get(i);
+                                 
+         double dx = futureTable.getX() - 
+           currTable.getX();
+         double dy = futureTable.getY() - 
+           currTable.getY();
+         
+         DispRectangle studentSearch = new DispRectangle(currTable.getX() - 10,currTable.getY() - 10,
+           currTable.getWidth() + 20,currTable.getHeight() + 20);
+
+         for (int j = 0; j < studentShapes.size(); j++) {
+          if (studentSearch.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
+
+           studentShapes.get(j).setHighlighted(true);
+           studentShapes.get(j).setX(studentShapes.get(j).getX() + dx);
+           studentShapes.get(j).setY(studentShapes.get(j).getY() + dy);
+           
+
+          }           
+         }
+         
+         DispRectangle studentSearch2 = new DispRectangle(futureTable.getX() - 10,futureTable.getY() - 10,
+           futureTable.getWidth() + 20,futureTable.getHeight() + 20);
+         
+         for (int j = 0; j < studentShapes.size(); j++) {
+          if (studentSearch2.getBoundingBox().intersects(studentShapes.get(j).getBoundingBox())) {
+           if (!(studentShapes.get(j).isHighlighted())) {
+
+            studentShapes.get(j).setX(studentShapes.get(j).getX() - dx);
+            studentShapes.get(j).setY(studentShapes.get(j).getY() - dy);
+            
+           } else {
+            studentShapes.get(j).setHighlighted(false);
+           }
+
+          }           
+         }
+         
+         tableShapes.get(i).setX(currTable.getX());
+         tableShapes.get(i).setY(currTable.getY());
+         
+         tableShapes.get(selectedTableIdx).setX(tableShapes.get(selectedTableIdx).getX() + dx);
+         tableShapes.get(selectedTableIdx).setY(tableShapes.get(selectedTableIdx).getY() + dy);
+         
+         for (int j = 0; j < tableShapes.size(); j++) {
+          tableShapes.get(j).setHighlighted(false);
+         }
+         
+         this.state = UIState.STATE_TABLE_SELECTED;        
+         
+         
+        }        
+       } 
+      }
+      
+      
+      
+      if (sidePnl.backButtonPending()) {
+
+       this.state = UIState.STATE_TABLE_SELECTED;
+
+       for (int i = 0; i < tableShapes.size(); i++) {
+        tableShapes.get(i).setHighlighted(false);   
+       }
+      }
+     } 
+
+     sidePnl.handleAll();
+
+    }
+   } 
+  }
+
+  public void updateCamera(Graphics g) {
+   zooming(g);
+   panning(g);
+  }
+
+  public UIState getUIState() {
+   return this.state;
+  } 
+
+  public void zooming(Graphics g) {
+   Graphics2D g2 = (Graphics2D) g;
+   Dimension d = this.getSize();
+   g2.translate(d.width/2, d.height/2);
+   g2.scale(mouseListener.getZoomScale(), mouseListener.getZoomScale());
+   g2.translate(-d.width/2, -d.height/2);
+  }
+
+  public void panning(Graphics g) {
+   if (mouseListener.isDragging()) {
+    dx = (int) (mouseListener.getReleaseX() - mouseListener.getClick().getX());
+    dy = (int) (mouseListener.getReleaseY() - mouseListener.getClick().getY());
+    int totalX = camX + dx;
+    int totalY = camY + dy;
+    if (totalX < MAX_LEFT) {
+     totalX = MAX_LEFT;
+    } else if (totalX > MAX_RIGHT) {
+     totalX = MAX_RIGHT;
+    }
+    if (totalY < MAX_TOP) {
+     totalY = MAX_TOP;
+    } else if (totalY > MAX_BOTTOM) {
+     totalY = MAX_BOTTOM;
+    }
+    g.translate(-totalX, -totalY);
+   } else {
+    camX += dx;
+    camY += dy;
+    if (camX < MAX_LEFT) {
+     camX = MAX_LEFT;
+    } else if (camX > MAX_RIGHT) {
+     camX = MAX_RIGHT;
+    }
+    if (camY < MAX_TOP) {
+     camY = MAX_TOP;
+    } else if (camY > MAX_BOTTOM) {
+     camY = MAX_BOTTOM;
+    }
+    dx = 0;
+    dy = 0;
+    g.translate(-camX, -camY);
+   }
+  }
+ }
 }

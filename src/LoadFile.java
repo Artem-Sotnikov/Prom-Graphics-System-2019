@@ -1,169 +1,66 @@
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 public class LoadFile {
-	private ArrayList<DispRectangle> tableList;
-	private ArrayList<DispStudent> studentList;
+	private String fileName;
+	private SaveFile saveFile;
 	
-	public LoadFile() {
-		loadShapes();
+	public LoadFile(String filename) {
+		this.fileName = filename;
 	}
 	
-	public LoadFile(ArrayList<DispRectangle> tableL, ArrayList<DispStudent> studentL) {
-		this.studentList = studentL;
-		this.tableList = tableL;
-	}
-	
-	public void loadShapes() {
-		loadTables();
-		loadStudents();
-	}
-	
-	public void saveShapes() {
-		saveTables();
-		saveStudents();
-	}
-	
-	public void loadTables() {
-		boolean cont = true;
-		FileInputStream f;
-		ObjectInputStream o;
-		ArrayList<DispRectangle> loadList = new ArrayList<DispRectangle>();
-		
+	public void load() {
 		try {
-			f = new FileInputStream(new File("src/savefiles/savetables.txt"));
-			o = new ObjectInputStream(f);
-			
-			while (cont) {
-				DispRectangle obj = (DispRectangle) o.readObject();
-				if (obj != null) {
-					loadList.add(obj);
-				} else {
-					cont = false;
-				}
-			}
+			FileInputStream f = new FileInputStream(new File(fileName));
+			ObjectInputStream o = new ObjectInputStream(f);
+			this.saveFile = (SaveFile) o.readObject();
 			o.close();
 			f.close();
-		} catch (EOFException e) {
-			this.tableList = loadList;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void loadStudents() {
-		boolean cont = true;
-		FileInputStream f;
-		ObjectInputStream o;
-		ArrayList<DispStudent> loadList = new ArrayList<DispStudent>();
-		
+	public void save() {
 		try {
-			f = new FileInputStream(new File("src/savefiles/savestudents.txt"));
-			o = new ObjectInputStream(f);
-			
-			while (cont) {
-				DispStudent obj = (DispStudent) o.readObject();
-				if (obj != null) {
-					loadList.add(obj);
-				} else {
-					cont = false;
-				}
-			}
+			FileOutputStream f = new FileOutputStream(new File(fileName));
+			ObjectOutputStream o = new ObjectOutputStream(f);
+			o.writeObject(this.saveFile);
 			o.close();
 			f.close();
-		} catch (EOFException e) {
-			this.studentList = loadList;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void saveTables() {
-		try {
-			FileOutputStream f = new FileOutputStream(new File("src/savefiles/savetables.txt"));
-			ObjectOutputStream o = new ObjectOutputStream(f);
-			for (DispRectangle obj : this.tableList) {
-				o.writeObject(obj);
-			}
-			o.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void saveStudents() {
-		try {
-			FileOutputStream f = new FileOutputStream(new File("src/savefiles/savestudents.txt"));
-			ObjectOutputStream o = new ObjectOutputStream(f);
-			for (DispStudent obj : this.studentList) {
-				o.writeObject(obj);
-			}
-			o.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void outputTables() {
-		for (DispRectangle table : this.tableList) {
-			System.out.println(table.toString());
-			System.out.println("");
-		}
-	}
-	
-	public void outputStudents() {
-		for (DispStudent student : this.studentList) {
-			System.out.println(student.toString());
-			System.out.println("");
-		}
-	}
-	
 	/**
-	 * @return the tableList
+	 * @return the fileName
 	 */
-	public ArrayList<DispRectangle> getTableList() {
-		return tableList;
+	public String getFileName() {
+		return fileName;
 	}
 
 	/**
-	 * @return the studentList
+	 * @param fileName the fileName to set
 	 */
-	public ArrayList<DispStudent> getStudentList() {
-		return studentList;
+	public void setFilename(String fileName) {
+		this.fileName = fileName;
 	}
 
 	/**
-	 * @param tableList the tableList to set
+	 * @return the saveFile
 	 */
-	public void setTableList(ArrayList<DispRectangle> tableList) {
-		this.tableList = tableList;
+	public SaveFile getSaveFile() {
+		return saveFile;
 	}
 
 	/**
-	 * @param studentList the studentList to set
+	 * @param saveFile the saveFile to set
 	 */
-	public void setStudentList(ArrayList<DispStudent> studentList) {
-		this.studentList = studentList;
-	}
-
-	public static void main(String[] args) {
-		ArrayList<DispRectangle> tableList = new ArrayList<DispRectangle>();
-		tableList.add(new DispRectangle(500, 500, 100, 50));
-		
-		ArrayList<DispStudent> studentList = new ArrayList<DispStudent>();
-		studentList.add(new DispStudent(300, 70, 18, new Student("Joe")));
-		studentList.add(new DispStudent(300, 90, 18, new Student("Karen")));
-		studentList.add(new DispStudent(500, 90, 18, new Student("Fred")));
-		
-		LoadFile loadFile = new LoadFile(tableList, studentList);
-		
-		loadFile.saveShapes();
-		loadFile.outputTables();
-		loadFile.outputStudents();
+	public void setSaveFile(SaveFile saveFile) {
+		this.saveFile = saveFile;
 	}
 }
