@@ -15,7 +15,7 @@ public class Table {
 		rList.add(new Student("Nate"));
 		rList.add(new Student("Lloyd"));
 		rList.add(new Student("Ken"));
-		rList.add(new Student("Sarah"));
+		//rList.add(new Student("Sarah"));
 		
 		return rList;
 	}
