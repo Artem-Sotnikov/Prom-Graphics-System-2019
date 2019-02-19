@@ -1,0 +1,31 @@
+import javax.swing.JFrame;
+import java.util.ArrayList;
+
+public class TestMain { 
+	static JFrame window; 
+
+	public static void main(String[] args) {
+		window = new FloorPlan();
+
+		ArrayList<Table> testTables = new ArrayList<Table>();
+
+		for (int i = 0; i < 20; i++) {
+			testTables.add(new Table());
+		}
+		
+		// either load from existing file OR generate from list of tables
+
+<<<<<<< HEAD
+		// ((FloorPlan) window).loadShapesFromFile();
+		((FloorPlan) window).generateFloorPlan(testTables, "ROUND TABLES");
+=======
+		((FloorPlan) window).load();
+		// ((FloorPlan) window).generateFloorPlan(testTables, "ROUND TABLES");
+>>>>>>> c3953b9e8f9926606b6d7e42a436c7fe5c54b2a6
+		//((FloorPlan) window).generateFloorPlan(testTables);
+		
+		//while (true) {
+			((FloorPlan) window).displayFloorPlan();
+		//}
+	} 
+}
