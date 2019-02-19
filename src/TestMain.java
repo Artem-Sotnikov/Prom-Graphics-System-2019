@@ -19,8 +19,6 @@ public class TestMain {
 		// ((FloorPlan) window).generateFloorPlan(testTables, "ROUND TABLES");
 		//((FloorPlan) window).generateFloorPlan(testTables);
 		
-		
-
 		//while (true) {
 			((FloorPlan) window).displayFloorPlan();
 		//}
