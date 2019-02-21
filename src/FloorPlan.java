@@ -39,7 +39,7 @@ public class FloorPlan extends JFrame {
 	
 	private JFileChooser chooser;
 
-	private LoadFile loadFile = new LoadFile("src/savefiles/savefile.txt");
+	private LoadFile loadFile = new LoadFile("src/savefiles/default.txt");
 
 	public FloorPlan() {
 		super("Floor Plan");
@@ -69,16 +69,16 @@ public class FloorPlan extends JFrame {
 
 		this.resizeCalled = false;
 
-		this.chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
-		chooser.setFileFilter(filter);
-
 		promptWindow = new JFrame();
 		//promptWindow.setVisible(true);
 		promptWindow.setSize(400,100);
 		promptWindow.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		promptWindow.requestFocusInWindow();  
-		promptWindow.setLocationRelativeTo(null);  
+		promptWindow.setLocationRelativeTo(null);
+		
+		this.chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+		chooser.setFileFilter(filter);
 
 	}
 
@@ -104,29 +104,38 @@ public class FloorPlan extends JFrame {
 		System.exit(0);
 	}
 
-	public void loadFloorPlan() {
-		chooseFile();
+	public void saveFloorPlan() {
+		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
+		loadFile.save();
+	}
+	
+	public void saveAsFloorPlan() {
+		int returnVal = chooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			String fileName = chooser.getSelectedFile().getPath();
+			this.loadFile.setFileName(fileName);
+			this.loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
+			loadFile.save();
+		}
+	}
+	
+	public void loadFloorPlan(boolean initial) {
+		chooseFile(initial);
 		loadFile.load();
 		SaveFile saveFile = loadFile.getSaveFile();
 		tableShapes = saveFile.getTableList();
 		studentShapes = saveFile.getStudentList();
 	}
 
-	public void saveFloorPlan() {
-		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
-		loadFile.save();
-	}
-
-	public void chooseFile() {
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
-		chooser.setFileFilter(filter);
+	public void chooseFile(boolean initial) {
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String fileName = chooser.getSelectedFile().getPath();
 			this.loadFile = new LoadFile(fileName);
 		} else if (returnVal == JFileChooser.CANCEL_OPTION) {
-			exit();
+			if (initial == true) {
+				exit();
+			}
 		}
 	}
 
@@ -136,7 +145,6 @@ public class FloorPlan extends JFrame {
 			int distToNextTable = tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 
 			this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
-			//System.out.println(MAX_RIGHT);
 			this.MAX_BOTTOM = this.MAX_RIGHT;
 
 			double determinedX = 0;
@@ -260,14 +268,16 @@ public class FloorPlan extends JFrame {
 	private class SidePanel extends JPanel {
 		private static final long serialVersionUID = 1L;
 
-		final DispRectangle saveButton2 = new DispRectangle(10,10,100,40);
-		final DispRectangle loadButton2 = new DispRectangle(10,60,100,40);
-		final DispRectangle backButton2 = new DispRectangle(10,110,100,40);
-		final DispRectangle switchButton2 = new DispRectangle(10,160,100,40); 
-		final DispRectangle resizeButton = new DispRectangle(10,210,100,40);
+		final DispRectangle saveButton = new DispRectangle(10,10,100,40);
+		final DispRectangle saveAsButton = new DispRectangle(10,60,100,40);
+		final DispRectangle loadButton = new DispRectangle(10,110,100,40);
+		final DispRectangle backButton = new DispRectangle(10,160,100,40);
+		final DispRectangle switchButton = new DispRectangle(10,210,100,40); 
+		final DispRectangle resizeButton = new DispRectangle(10,260,100,40);
 
-		private boolean loadButtonState;
 		private boolean saveButtonState;
+		private boolean saveAsButtonState;
+		private boolean loadButtonState;
 		private boolean backButtonState;
 		private boolean switchButtonState;
 		private boolean resizeButtonState;
@@ -289,12 +299,16 @@ public class FloorPlan extends JFrame {
 			return this.clickPending;
 		}
 
-		public boolean loadButtonPending() {
-			return this.loadButtonState;
-		}
-
 		public boolean saveButtonPending() {
 			return this.saveButtonState; 
+		}
+		
+		public boolean saveAsButtonPending() {
+			return this.saveAsButtonState;
+		}
+		
+		public boolean loadButtonPending() {
+			return this.loadButtonState;
 		}
 
 		public boolean backButtonPending() {
@@ -312,8 +326,9 @@ public class FloorPlan extends JFrame {
 		public void handleAll() {
 			this.clickPending = false;
 
-			this.loadButtonState = false;
 			this.saveButtonState = false;
+			this.saveAsButtonState = false;
+			this.loadButtonState = false;
 			this.backButtonState = false;
 			this.switchButtonState = false;
 			this.resizeButtonState = false;
@@ -323,18 +338,20 @@ public class FloorPlan extends JFrame {
 			super.paintComponent(g);
 			setDoubleBuffered(true);
 
-			loadButton2.draw(g,Color.CYAN);
-			saveButton2.draw(g,Color.CYAN);
+			saveButton.draw(g,Color.CYAN);
+			saveAsButton.draw(g,Color.CYAN);
+			loadButton.draw(g,Color.CYAN);
 
 			g.setColor(Color.BLACK);
-			g.drawString("SAVE",(int)saveButton2.getX() + OFFSET_FACTOR,(int)saveButton2.getY() + OFFSET_FACTOR*3);
-			g.drawString("LOAD",(int)loadButton2.getX() + OFFSET_FACTOR,(int)loadButton2.getY() + OFFSET_FACTOR*3);
+			g.drawString("SAVE",(int)saveButton.getX() + OFFSET_FACTOR,(int)saveButton.getY() + OFFSET_FACTOR*3);
+			g.drawString("SAVE AS", (int)saveAsButton.getX() + OFFSET_FACTOR, (int)saveAsButton.getY() + OFFSET_FACTOR*3);
+			g.drawString("LOAD",(int)loadButton.getX() + OFFSET_FACTOR,(int)loadButton.getY() + OFFSET_FACTOR*3);
 
 
 			if (disp.getUIState() != UIState.STATE_VIEWING) {    
-				backButton2.draw(g,Color.YELLOW);
+				backButton.draw(g,Color.YELLOW);
 				g.setColor(Color.BLACK);
-				g.drawString("BACK",(int)backButton2.getX() + OFFSET_FACTOR,(int)backButton2.getY() + OFFSET_FACTOR*3);
+				g.drawString("BACK",(int)backButton.getX() + OFFSET_FACTOR,(int)backButton.getY() + OFFSET_FACTOR*3);
 			} else {
 				resizeButton.draw(g,Color.RED);
 				g.setColor(Color.BLACK);
@@ -342,9 +359,9 @@ public class FloorPlan extends JFrame {
 			}
 
 			if ((disp.getUIState() == UIState.STATE_STUDENT_SELECTED) || (disp.getUIState() == UIState.STATE_TABLE_SELECTED)) {
-				switchButton2.draw(g,Color.GREEN);
+				switchButton.draw(g,Color.GREEN);
 				g.setColor(Color.BLACK);
-				g.drawString("SWITCH WITH",(int)switchButton2.getX() + OFFSET_FACTOR,(int)switchButton2.getY() + OFFSET_FACTOR*3);
+				g.drawString("SWITCH WITH",(int)switchButton.getX() + OFFSET_FACTOR,(int)switchButton.getY() + OFFSET_FACTOR*3);
 			}
 
 			g.setColor(Color.WHITE);
@@ -373,13 +390,15 @@ public class FloorPlan extends JFrame {
 
 				mouseListener2.clickHandled();
 
-				if (backButton2.getBoundingBox().contains(clickPos)) {
+				if (backButton.getBoundingBox().contains(clickPos)) {
 					this.backButtonState = true;     
-				} else if (switchButton2.getBoundingBox().contains(clickPos)) {
+				} else if (switchButton.getBoundingBox().contains(clickPos)) {
 					this.switchButtonState = true;
-				} else if (saveButton2.getBoundingBox().contains(clickPos)) {
+				} else if (saveButton.getBoundingBox().contains(clickPos)) {
 					this.saveButtonState = true;
-				} else if (loadButton2.getBoundingBox().contains(clickPos)) {
+				} else if (saveAsButton.getBoundingBox().contains(clickPos)) {
+					this.saveAsButtonState = true;
+				} else if (loadButton.getBoundingBox().contains(clickPos)) {
 					this.loadButtonState = true;
 				} else if (resizeButton.getBoundingBox().contains(clickPos)) {
 					this.resizeButtonState = true;
@@ -484,8 +503,11 @@ public class FloorPlan extends JFrame {
 					if (sidePnl.saveButtonPending()) {
 						saveFloorPlan();
 						sidePnl.handleAll();
+					} else if (sidePnl.saveAsButtonPending()) {
+						saveAsFloorPlan();
+						sidePnl.handleAll();
 					} else if (sidePnl.loadButtonPending()) {
-						loadFloorPlan();
+						loadFloorPlan(false);
 						sidePnl.handleAll();
 					}
 
@@ -698,8 +720,11 @@ public class FloorPlan extends JFrame {
 		}
 
 		public void applyMouseTransformation(Point pos) {
-			pos.x = (int) ((((pos.x - (this.getSize().width/2)) / mouseListener.getZoomScale())) + (this.getSize().width/2) + camX);
-			pos.y = (int) ((((pos.y - (this.getSize().height/2)) / mouseListener.getZoomScale())) + (this.getSize().height/2) + camY);
+			int width = this.getSize().width;
+			int height = this.getSize().height;
+			double zoomScale = mouseListener.getZoomScale();
+			pos.x = (int) ((((pos.x - (width/2)) / zoomScale)) + (width/2) + camX);
+			pos.y = (int) ((((pos.y - (height/2)) / zoomScale)) + (height/2) + camY);
 		}
 
 		public void updateCamera(Graphics g) {
@@ -713,10 +738,11 @@ public class FloorPlan extends JFrame {
 
 		public void zooming(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
-			Dimension d = this.getSize();
-			g2.translate(d.width/2, d.height/2);
+			int width = this.getSize().width;
+			int height = this.getSize().height;
+			g2.translate(width/2, height/2);
 			g2.scale(mouseListener.getZoomScale(), mouseListener.getZoomScale());
-			g2.translate(-d.width/2, -d.height/2);
+			g2.translate(-width/2, -height/2);
 		}
 
 		public void panning(Graphics g) {

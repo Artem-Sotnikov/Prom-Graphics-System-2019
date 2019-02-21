@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class LoadFile {
-	private String fileName = "src/savefiles/savefile.txt";
+	private String fileName = "src/savefiles/default.txt";
 	private SaveFile saveFile;
 	
 	public LoadFile(String filename) {
@@ -26,6 +26,7 @@ public class LoadFile {
 	}
 	
 	public void save() {
+		saveFile.resetStates();
 		try {
 			FileOutputStream f = new FileOutputStream(new File(fileName));
 			ObjectOutputStream o = new ObjectOutputStream(f);
@@ -48,7 +49,7 @@ public class LoadFile {
 	/**
 	 * @param fileName the fileName to set
 	 */
-	public void setFilename(String fileName) {
+	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 

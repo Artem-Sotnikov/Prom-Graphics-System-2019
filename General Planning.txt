@@ -7,9 +7,7 @@ Feature Plan:
 
 Finish features:
 
-save/load from file using file browser
 switch to has to actually work
 export to jpeg
 More in-window features (toggle hovertext for all students and tables [zoomed in]);
-Fix the bugs with zooming
 Everything must be JavaDoc.

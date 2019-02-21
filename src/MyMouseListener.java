@@ -16,6 +16,7 @@ public class MyMouseListener implements MouseInputListener, MouseMotionListener,
 	private double zoomScale = 1;
 	private boolean clickHandled;
 	private boolean isDragging = false;
+	private boolean isScrolling = false;
 
 	public void clickHandled() {
 		this.clickHandled = true;
@@ -104,6 +105,10 @@ public class MyMouseListener implements MouseInputListener, MouseMotionListener,
 	public boolean isDragging() {
 		return this.isDragging;
 	}
+	
+	public boolean isScrolling() {
+		return this.isScrolling;
+	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
@@ -112,10 +117,14 @@ public class MyMouseListener implements MouseInputListener, MouseMotionListener,
 			for (int i = notches; i < 0; i++) {
 				zoomScale += 0.1;
 			}
+			isScrolling = true;
 		} else if (notches > 0) { // mouse wheel moved down
 			for (int i = notches; i > 0; i--) {
 				zoomScale -= 0.1;
 			}
+			isScrolling = true;
+		} else { // mouse wheel remains the same
+			isScrolling = false;
 		}
 		if (zoomScale < 1) {
 			zoomScale = 1;

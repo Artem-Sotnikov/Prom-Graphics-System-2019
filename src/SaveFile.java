@@ -12,6 +12,20 @@ public class SaveFile implements Serializable {
 		this.studentList = studentList;
 	}
 	
+	public void resetStates() {
+		for (DispTable table : tableList) {
+			table.setHovered(false);
+			table.setHighlighted(false);
+			table.setSelected(false);
+		}
+		
+		for (DispStudent student : studentList) {
+			student.setHovered(false);
+			student.setHighlighted(false);
+			student.setSelected(false);
+		}
+	}
+	
 	/**
 	 * @return the tableList
 	 */

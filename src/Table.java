@@ -14,18 +14,6 @@ public class Table implements Serializable {
 	}
 
 	public Table() {
-		this.size = 12;
-	}
-
-	public ArrayList<Student> getStudents() { 
-		return students; 
-	}
-
-	public void setStudents(ArrayList<Student> newStudents) { 
-		students = newStudents;
-	}
-
-	public ArrayList<Student> getStudentsCustom() {
 		ArrayList<Student> rList = new ArrayList<Student>(0);
 
 		rList.add(new Student("Bob"));
@@ -39,9 +27,17 @@ public class Table implements Serializable {
 		rList.add(new Student("Nate"));
 		rList.add(new Student("Lloyd"));
 		rList.add(new Student("Ken"));
-		//rList.add(new Student("Sarah"));
+		
+		this.students = rList;
+		this.size = 12;
+	}
 
-		return rList;
+	public ArrayList<Student> getStudents() { 
+		return students; 
+	}
+
+	public void setStudents(ArrayList<Student> newStudents) { 
+		students = newStudents;
 	}
 
 	public int getSize() {		
