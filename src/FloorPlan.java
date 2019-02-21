@@ -41,6 +41,9 @@ public class FloorPlan extends JFrame {
 
 	private LoadFile loadFile = new LoadFile("src/savefiles/default.txt");
 
+	/**
+	 * Class constructor.
+	 */
 	public FloorPlan() {
 		super("Floor Plan");
 		this.disp = new Display();
@@ -82,6 +85,10 @@ public class FloorPlan extends JFrame {
 
 	}
 
+	/**
+	 * displayFloorPlan
+	 * This method will display the floor plan using repaint.
+	 */
 	public void displayFloorPlan() {
 
 		this.setVisible(true);
@@ -99,16 +106,19 @@ public class FloorPlan extends JFrame {
 		}  
 	}
 
-	public void exit() {
-		this.dispose();
-		System.exit(0);
-	}
-
+	/**
+	 * saveFloorPlan
+	 * This method will save a floor plan to a file.
+	 */
 	public void saveFloorPlan() {
 		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
 		loadFile.save();
 	}
 	
+	/**
+	 * saveAsFloorPlan
+	 * This method will save a floor plan to a specified file.
+	 */
 	public void saveAsFloorPlan() {
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -119,6 +129,11 @@ public class FloorPlan extends JFrame {
 		}
 	}
 	
+	/**
+	 * loadFloorPlan
+	 * This method will load a floor plan from a file.
+	 * @param initial
+	 */
 	public void loadFloorPlan(boolean initial) {
 		chooseFile(initial);
 		loadFile.load();
@@ -127,6 +142,11 @@ public class FloorPlan extends JFrame {
 		studentShapes = saveFile.getStudentList();
 	}
 
+	/**
+	 * chooseFile
+	 * This method will choose a file.
+	 * @param initial
+	 */
 	public void chooseFile(boolean initial) {
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -134,11 +154,17 @@ public class FloorPlan extends JFrame {
 			this.loadFile = new LoadFile(fileName);
 		} else if (returnVal == JFileChooser.CANCEL_OPTION) {
 			if (initial == true) {
-				exit();
+				System.exit(0);
 			}
 		}
 	}
 
+	/**
+	 * generateFloorPlan
+	 * This method will generate a floor plan from an arraylist of tables.
+	 * @param tables
+	 * @param config
+	 */
 	public void generateFloorPlan(ArrayList<Table> tables, String config) {
 		if (config == "ROUND TABLES") {
 			int tableSize = tables.get(0).getSize(); 
@@ -286,6 +312,9 @@ public class FloorPlan extends JFrame {
 
 		private MyMouseListener mouseListener2;
 
+		/**
+		 * Class constructor.
+		 */
 		public SidePanel() {
 			this.mouseListener2 = new MyMouseListener();
 			this.addMouseListener(this.mouseListener2);
@@ -295,22 +324,47 @@ public class FloorPlan extends JFrame {
 			this.handleAll();
 		}
 
+		/**
+		 * anyPending
+		 * This method will return true if a click is pending.
+		 * @return boolean clickPending
+		 */
 		public boolean anyPending() {
 			return this.clickPending;
 		}
 
+		/**
+		 * saveButtonPending
+		 * This method will return true if the save button is pending.
+		 * @return boolean saveButtonState
+		 */
 		public boolean saveButtonPending() {
 			return this.saveButtonState; 
 		}
 		
+		/**
+		 * saveAsButtonPending
+		 * This method will return true if the save as button is pending.
+		 * @return boolean saveAsButtonState
+		 */
 		public boolean saveAsButtonPending() {
 			return this.saveAsButtonState;
 		}
 		
+		/**
+		 * loadButtonPending
+		 * This method will return true if the load button is pending.
+		 * @return boolean loadButtonState
+		 */
 		public boolean loadButtonPending() {
 			return this.loadButtonState;
 		}
 
+		/**
+		 * backButtonPending
+		 * This method will return true if the back button is pending.
+		 * @return boolean backButtonState
+		 */
 		public boolean backButtonPending() {
 			return this.backButtonState;
 		}
