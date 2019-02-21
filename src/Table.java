@@ -1,18 +1,29 @@
-// Contains testing code by Carol Chen
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Table: This class will handle information related to tables.
+ * 
+ * @author Carol
+ */
 public class Table implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private int size;
 	private ArrayList<Student> students;
 
-	public Table(int initSize) { 
+	/**
+	 * Class constructor with parameter.
+	 * 
+	 * @param initSize
+	 */
+	public Table(int initSize) {
 		size = initSize;
 	}
 
+	/**
+	 * Class constructor.
+	 */
 	public Table() {
 		ArrayList<Student> rList = new ArrayList<Student>(0);
 
@@ -27,20 +38,29 @@ public class Table implements Serializable {
 		rList.add(new Student("Nate"));
 		rList.add(new Student("Lloyd"));
 		rList.add(new Student("Ken"));
-		
+
 		this.students = rList;
 		this.size = 12;
 	}
 
-	public ArrayList<Student> getStudents() { 
-		return students; 
+	/**
+	 * @return ArrayList<Student> students
+	 */
+	public ArrayList<Student> getStudents() {
+		return students;
 	}
 
-	public void setStudents(ArrayList<Student> newStudents) { 
+	/**
+	 * @param ArrayList<Student> newStudents
+	 */
+	public void setStudents(ArrayList<Student> newStudents) {
 		students = newStudents;
 	}
 
-	public int getSize() {		
+	/**
+	 * @return int size
+	 */
+	public int getSize() {
 		return this.size;
 	}
 }
