@@ -83,13 +83,6 @@ public class FloorPlan extends JFrame {
 
 		this.resizeCalled = false;
 
-		promptWindow = new JFrame();
-		// promptWindow.setVisible(true);
-		promptWindow.setSize(400, 100);
-		promptWindow.setDefaultCloseOperation(HIDE_ON_CLOSE);
-		promptWindow.requestFocusInWindow();
-		promptWindow.setLocationRelativeTo(null);
-
 		this.chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
 		chooser.setFileFilter(filter);
@@ -143,6 +136,9 @@ public class FloorPlan extends JFrame {
 	 * @param boolean initial
 	 */
 	public void loadFloorPlan(boolean initial) {
+		if (initial == false) {
+			saveFloorPlan();
+		}
 		chooseFile(initial);
 		loadFile.load();
 		SaveFile saveFile = loadFile.getSaveFile();
@@ -748,13 +744,9 @@ public class FloorPlan extends JFrame {
 						}
 
 					} else if (this.state == UIState.STATE_TABLE_MOVING) {
-						System.out.println("Table inital hit!");
 						for (int i = 0; i < tableShapes.size(); i++) {
 							if (tableShapes.get(i).getBoundingBox().contains(clickPos)) {
 								if (tableShapes.get(i).isHighlighted()) {
-
-									System.out.println("Table hit!");
-
 									DispRectangle currTable = selectedTable;
 									DispRectangle futureTable = tableShapes.get(i);
 
