@@ -93,7 +93,10 @@ public class FloorPlan extends JFrame {
 		chooser.setFileFilter(filter);
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of de85d34... u
 		currentSizeLabel = new JLabel();
 		  
 		  promptPanel = new JPanel();
@@ -106,6 +109,9 @@ public class FloorPlan extends JFrame {
 		  
 		  sizeSet = false;
 
+<<<<<<< HEAD
+>>>>>>> parent of de85d34... u
+=======
 >>>>>>> parent of de85d34... u
 		currentSizeLabel = new JLabel();
 		  
@@ -121,6 +127,20 @@ public class FloorPlan extends JFrame {
 
 	}
 
+	/**
+	 * This method will check if the string can be cast to a valid integer
+	 */
+	
+	private boolean isInteger( String input ) {
+	     try {
+	         Integer.parseInt( input );
+	         return true;
+	     }
+	     catch( Exception e ) {
+	         return false;
+	     }
+	 }
+	
 	/**
 	 * This method will check if the string can be cast to a valid integer
 	 */
@@ -430,6 +450,9 @@ public class FloorPlan extends JFrame {
 	}
 	
 	private void regenerateFloorPlan(String config) {
+<<<<<<< HEAD
+>>>>>>> parent of de85d34... u
+=======
 >>>>>>> parent of de85d34... u
 		  if (config == "round") {
 		   ArrayList<Table> paramTables = new ArrayList<Table>(0);
