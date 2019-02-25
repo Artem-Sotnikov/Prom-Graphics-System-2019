@@ -49,13 +49,6 @@ public class FloorPlan extends JFrame {
 	private int selectedTableIdx;
 
 	private JFileChooser chooser;
-	
-	private JPanel promptPanel;
-	 private JTextField maxRightField = new JTextField(5);
-	 private JTextField maxBottomField = new JTextField(5);
-	 
-	 private boolean sizeSet;
-	 private JLabel currentSizeLabel;
 
 	private LoadFile loadFile = new LoadFile("src/savefiles/default.txt");
 
@@ -91,35 +84,21 @@ public class FloorPlan extends JFrame {
 		this.chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
 		chooser.setFileFilter(filter);
-		
+
 		currentSizeLabel = new JLabel();
-		  
-		  promptPanel = new JPanel();
-		  promptPanel.add(currentSizeLabel);
-		  promptPanel.add(new JLabel("Enter Max Width Size"));
-		  promptPanel.add(maxRightField);
-		  promptPanel.add(Box.createHorizontalStrut(15)); // a spacer
-		  promptPanel.add(new JLabel("Enter Max Height Size"));
-		  promptPanel.add(maxBottomField);
-		  
-		  sizeSet = false;
+
+		promptPanel = new JPanel();
+		promptPanel.add(currentSizeLabel);
+		promptPanel.add(new JLabel("Enter Max Width Size"));
+		promptPanel.add(maxRightField);
+		promptPanel.add(Box.createHorizontalStrut(15)); // a spacer
+		promptPanel.add(new JLabel("Enter Max Height Size"));
+		promptPanel.add(maxBottomField);
+
+		sizeSet = false;
 
 	}
 
-	/**
-	 * This method will check if the string can be cast to a valid integer
-	 */
-	
-	private boolean isInteger( String input ) {
-	     try {
-	         Integer.parseInt( input );
-	         return true;
-	     }
-	     catch( Exception e ) {
-	         return false;
-	     }
-	 }
-	
 	/**
 	 * This method will display the floor plan using repaint.
 	 */
@@ -357,45 +336,6 @@ public class FloorPlan extends JFrame {
 			}
 		}
 	}
-	
-	private void regenerateFloorPlan(String config) {
-		  if (config == "round") {
-		   ArrayList<Table> paramTables = new ArrayList<Table>(0);
-		   
-		   for (int i = 0; i < tableShapes.size(); i++) {
-		    
-		    //System.out.println(tableShapes.get(i).isReal());
-		    
-		    if (tableShapes.get(i).isReal()) {
-		     paramTables.add(tableShapes.get(i).getOriginalTable());
-		    }       
-		   }
-		   
-		   int tableSize = tableShapes.get(0).getOriginalTable().getSize();
-		   
-		   this.tableShapes.clear();
-		   this.studentShapes.clear();
-		   
-		   this.generateFloorPlan(paramTables,"ROUND TABLES");
-		  
-		   boolean messageShow = false;
-		   
-		   for (int i = 0; i < tableShapes.size(); i++) {      
-		    if (tableShapes.get(i).isReal()) {
-		     if (tableShapes.get(i).getY() > MAX_BOTTOM - tableSize*SCALE_FACTOR/3 - SCALE_FACTOR*2) {
-		      messageShow = true;
-		      MAX_BOTTOM = (int) (tableShapes.get(i).getY() + tableSize*SCALE_FACTOR/3 + SCALE_FACTOR*2);
-		     }
-		    }  else {
-		     //System.out.println("false");
-		    }     
-		   }
-		   
-		   if (messageShow) {
-		    JOptionPane.showMessageDialog(null, "your height was modified to fit all tables");
-		   }
-		  }
-		 }
 
 	/**
 	 * SidePanel: This class will display buttons to the left.
@@ -894,9 +834,9 @@ public class FloorPlan extends JFrame {
 									tableShapes.get(i).setY(currTable.getY());
 
 									tableShapes.get(selectedTableIdx)
-											.setX(tableShapes.get(selectedTableIdx).getX() + dx);
+									.setX(tableShapes.get(selectedTableIdx).getX() + dx);
 									tableShapes.get(selectedTableIdx)
-											.setY(tableShapes.get(selectedTableIdx).getY() + dy);
+									.setY(tableShapes.get(selectedTableIdx).getY() + dy);
 
 									for (int j = 0; j < tableShapes.size(); j++) {
 										tableShapes.get(j).setHighlighted(false);
