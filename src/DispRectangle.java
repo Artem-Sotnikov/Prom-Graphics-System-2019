@@ -24,10 +24,10 @@ public class DispRectangle extends Shape implements Serializable {
 	/**
 	 * Class constructor with parameters.
 	 * 
-	 * @param double x
-	 * @param double y
-	 * @param double width
-	 * @param double height
+	 * @param x double
+	 * @param y double
+	 * @param width double
+	 * @param height double
 	 */
 	public DispRectangle(double x, double y, double width, double height) {
 		super(x, y);

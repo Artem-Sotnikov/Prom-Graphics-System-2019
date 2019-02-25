@@ -16,7 +16,7 @@ public class Student implements Serializable {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param name
+	 * @param name the name
 	 */
 	public Student(String name) {
 		this.name = name;
@@ -25,10 +25,10 @@ public class Student implements Serializable {
 	/**
 	 * Class constructor with parameters.
 	 * 
-	 * @param initName
-	 * @param initStudentNumber
-	 * @param initDietaryRestrictions
-	 * @param initFriendStudentNumbers
+	 * @param initName the initial name
+	 * @param initStudentNumber the initial student number
+	 * @param initDietaryRestrictions the initial dietary restrictions
+	 * @param initFriendStudentNumbers the initial friend student numbers
 	 */
 	public Student(String initName, String initStudentNumber, ArrayList<String> initDietaryRestrictions,
 			ArrayList<String> initFriendStudentNumbers) {

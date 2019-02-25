@@ -28,7 +28,7 @@ public class DispStudent extends DispCircle implements Serializable {
 	/**
 	 * Class constructor with parameter.
 	 * 
-	 * @param String name
+	 * @param name the name
 	 */
 	public DispStudent(String name) {
 	};
@@ -36,10 +36,10 @@ public class DispStudent extends DispCircle implements Serializable {
 	/**
 	 * Class constructor with multiple parameters.
 	 * 
-	 * @param x
-	 * @param y
-	 * @param radius
-	 * @param originalStudent
+	 * @param x double
+	 * @param y double
+	 * @param radius the radius
+	 * @param originalStudent the original student
 	 */
 	public DispStudent(double x, double y, double radius, Student originalStudent) {
 		super(x, y, radius);
@@ -47,14 +47,14 @@ public class DispStudent extends DispCircle implements Serializable {
 	}
 
 	/**
-	 * @return Student originalStudent
+	 * @return originalStudent the original student
 	 */
 	public Student getOriginalStudent() {
 		return originalStudent;
 	}
 
 	/**
-	 * @param Student originalStudent
+	 * @param originalStudent the original student
 	 */
 	public void setOriginalStudent(Student originalStudent) {
 		this.originalStudent = originalStudent;
@@ -90,7 +90,7 @@ public class DispStudent extends DispCircle implements Serializable {
 
 	/**
 	 * This method will draw an object.
-	 * @param Graphics g
+	 * @param g the graphics
 	 */
 	public void drawObject(Graphics g) {
 		if (this.isHovered()) {

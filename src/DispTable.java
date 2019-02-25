@@ -27,28 +27,28 @@ public class DispTable extends DispRectangle {
 	}
 
 	/**
-	 * @return Table originalTable
+	 * @return originalTable the table
 	 */
 	public Table getOriginalTable() {
 		return originalTable;
 	}
 
 	/**
-	 * @param Table originalTable
+	 * @param originalTable the table
 	 */
 	public void setOriginalTable(Table originalTable) {
 		this.originalTable = originalTable;
 	}
 
 	/**
-	 * @return boolean isRound
+	 * @return isRound is it round
 	 */
 	public boolean isRound() {
 		return isRound;
 	}
 
 	/**
-	 * @param boolean isRound
+	 * @param isRound is it round
 	 */
 	public void setRound(boolean isRound) {
 		this.isRound = isRound;
@@ -57,8 +57,8 @@ public class DispTable extends DispRectangle {
 	/**
 	 * This method will draw a box.
 	 * 
-	 * @param Graphics g
-	 * @param          int tableNumber
+	 * @param g the graphics
+	 * @param tableNumber the table number
 	 */
 	public void drawBox(Graphics g, int tableNumber) {
 		if (this.isReal()) {
@@ -92,9 +92,9 @@ public class DispTable extends DispRectangle {
 	/**
 	 * This method will draw a reduced table.
 	 * 
-	 * @param Graphics g
-	 * @param Color    color
-	 * @param          int reductionSize
+	 * @param g the graphics
+	 * @param color the color
+	 * @param reductionSize the reduction size
 	 */
 	public void drawReduced(Graphics g, Color color, int reductionSize) {
 		g.setColor(color);
@@ -111,7 +111,7 @@ public class DispTable extends DispRectangle {
 	/**
 	 * This method will draw an object.
 	 * 
-	 * @param Graphics g
+	 * @param g the graphics
 	 */
 	public void drawObject(Graphics g) {
 		if (this.isHovered()) {

@@ -31,8 +31,8 @@ public abstract class Shape implements Serializable {
 	/**
 	 * Class constructor with parameters.
 	 * 
-	 * @param double x
-	 * @param double y
+	 * @param x the x
+	 * @param y the y
 	 */
 	public Shape(double x, double y) {
 		this.x = x;
@@ -43,15 +43,15 @@ public abstract class Shape implements Serializable {
 	/**
 	 * This method will draw a shape with a custom color.
 	 * 
-	 * @param g
-	 * @param color
+	 * @param g the graphics
+	 * @param color the color
 	 */
 	abstract void draw(Graphics g, Color color);
 
 	/**
 	 * This method will draw a shape.
 	 * 
-	 * @param g
+	 * @param g the graphics
 	 */
 	abstract void draw(Graphics g);
 

@@ -19,7 +19,7 @@ public class TestMain {
 	/**
 	 * Main method.
 	 * 
-	 * @param String[] args
+	 * @param args the main method
 	 */
 	public static void main(String[] args) {
 		window = new FloorPlan();

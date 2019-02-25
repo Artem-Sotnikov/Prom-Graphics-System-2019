@@ -18,8 +18,8 @@ public class SaveFile implements Serializable {
 	/**
 	 * Class constructor with parameters.
 	 * 
-	 * @param tableList
-	 * @param studentList
+	 * @param tableList the table list
+	 * @param studentList the student list
 	 */
 	public SaveFile(int MAX_BOTTOM, int MAX_RIGHT, ArrayList<DispTable> tableList, ArrayList<DispStudent> studentList) {
 		this.MAX_BOTTOM = MAX_BOTTOM;

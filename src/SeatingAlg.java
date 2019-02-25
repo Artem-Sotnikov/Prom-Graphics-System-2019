@@ -9,9 +9,9 @@ public class SeatingAlg {
 	/**
 	 * This method will generate tables.
 	 * 
-	 * @param students
-	 * @param maxStudentsPerTable
-	 * @return
+	 * @param students the arraylist of students
+	 * @param maxStudentsPerTable the number of max students per table
+	 * @return tables
 	 */
 	public ArrayList<Table> generateTables(ArrayList<Student> students, int maxStudentsPerTable) {
 		int numStudents = students.size();

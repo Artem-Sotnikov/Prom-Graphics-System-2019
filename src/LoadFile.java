@@ -17,7 +17,7 @@ public class LoadFile {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param String filename
+	 * @param filename the file name
 	 */
 	public LoadFile(String filename) {
 		this.fileName = filename;

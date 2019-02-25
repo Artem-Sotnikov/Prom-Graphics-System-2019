@@ -202,7 +202,7 @@ public class FloorPlan extends JFrame {
 	/**
 	 * This method will load a floor plan from a file.
 	 * 
-	 * @param boolean initial
+	 * @param initial checks if the program is initially loading or not
 	 */
 	public void loadFloorPlan(boolean initial) {
 		if (initial == false) {
@@ -220,7 +220,7 @@ public class FloorPlan extends JFrame {
 	/**
 	 * This method will choose a file.
 	 * 
-	 * @param boolean initial
+	 * @param initial checks if the program is initially loading or not
 	 */
 	public void chooseFile(boolean initial) {
 		int returnVal = chooser.showOpenDialog(null);
@@ -237,9 +237,7 @@ public class FloorPlan extends JFrame {
 	/**
 	 * This method will generate a floor plan from an arraylist of tables.
 	 * 
-	 * @param ArrayList
-	 *                  <Table>
-	 *                  tables
+	 * @param tables an arraylist of tables
 	 */
 	public void generateFloorPlan(ArrayList<Table> tables) {
 		int tableSize = tables.get(0).getSize();
@@ -336,10 +334,8 @@ public class FloorPlan extends JFrame {
 	 * This method will generate a floor plan from an arraylist of tables. Config options are:
 	 * 	1."ROUND TABLES" : generates the tables as circles
 	 * 
-	 * @param ArrayList
-	 *                  <Table>
-	 *                  tables
-	 * @param String    config
+	 * @param tables an arraylist of tables
+	 * @param config checks which type of tables to generate
 	 */
 	public void generateFloorPlan(ArrayList<Table> tables, String config) {
 		if (config == "ROUND TABLES") {
@@ -464,7 +460,7 @@ public class FloorPlan extends JFrame {
 	/**
 	 * This method will regenerate a floor plan.
 	 * 
-	 * @param String config
+	 * @param config checks which type of tables to generate
 	 */
 	private void regenerateFloorPlan(String config) {
 		if (config == "round") {

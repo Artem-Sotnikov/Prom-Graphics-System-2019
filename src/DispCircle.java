@@ -23,9 +23,9 @@ public class DispCircle extends Shape implements Serializable {
 	/**
 	 * Class constructor with parameters.
 	 * 
-	 * @param double x
-	 * @param double y
-	 * @param double radius
+	 * @param x value
+	 * @param y value
+	 * @param radius the radius
 	 */
 	public DispCircle(double x, double y, double radius) {
 		super(x, y);
@@ -35,7 +35,7 @@ public class DispCircle extends Shape implements Serializable {
 	/**
 	 * This method will return the radius.
 	 * 
-	 * @return double radius
+	 * @return radius
 	 */
 	public double getRadius() {
 		return this.radius;
@@ -44,7 +44,7 @@ public class DispCircle extends Shape implements Serializable {
 	/**
 	 * This method will set the radius.
 	 * 
-	 * @param double rad
+	 * @param rad radius
 	 */
 	public void setRadius(double rad) {
 		this.radius = rad;

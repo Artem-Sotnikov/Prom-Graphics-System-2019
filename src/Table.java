@@ -44,7 +44,7 @@ public class Table implements Serializable {
 	}
 
 	/**
-	 * @return ArrayList<Student> students
+	 * @return students the students
 	 */
 	public ArrayList<Student> getStudents() {
 		return students;
