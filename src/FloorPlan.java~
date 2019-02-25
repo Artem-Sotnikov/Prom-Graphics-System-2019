@@ -51,14 +51,20 @@ public class FloorPlan extends JFrame {
 	private JFileChooser chooser;
 
 	private JPanel promptPanel;
-
+<<<<<<< HEAD
+	 private JTextField maxRightField = new JTextField(5);
+	 private JTextField maxBottomField = new JTextField(5);
+	 
+	 private boolean sizeSet;
+	 private JLabel currentSizeLabel;
+	 private JPanel infoLabel;
+=======
 	private JTextField maxRightField = new JTextField(5);
 	private JTextField maxBottomField = new JTextField(5);
 
 	private boolean sizeSet;
 	private JLabel currentSizeLabel;
-	private JPanel infoLabel;
-
+>>>>>>> eca8187a66671769390ac6f96f2eb2ce2f42b640
 
 	private LoadFile loadFile = new LoadFile("src/savefiles/default.txt");
 
@@ -96,6 +102,22 @@ public class FloorPlan extends JFrame {
 		chooser.setFileFilter(filter);
 
 		currentSizeLabel = new JLabel();
+<<<<<<< HEAD
+		  
+		  promptPanel = new JPanel();
+		  promptPanel.add(currentSizeLabel);
+		  promptPanel.add(new JLabel("Enter Max Width Size"));
+		  promptPanel.add(maxRightField);
+		  promptPanel.add(Box.createHorizontalStrut(15)); // a spacer
+		  promptPanel.add(new JLabel("Enter Max Height Size"));
+		  promptPanel.add(maxBottomField);
+		  
+		  sizeSet = false;
+		  
+		  infoLabel = new JPanel();
+		  infoLabel.add(new JLabel("Your layout has been sucessfully saved to file, and can now be retrived in future with the 'load' button"));
+=======
+>>>>>>> eca8187a66671769390ac6f96f2eb2ce2f42b640
 
 		promptPanel = new JPanel();
 		promptPanel.add(currentSizeLabel);
@@ -106,11 +128,7 @@ public class FloorPlan extends JFrame {
 		promptPanel.add(maxBottomField);
 
 		sizeSet = false;
-
-		infoLabel = new JPanel();
-		infoLabel.add(new JLabel("Your layout has been sucessfully saved to file, and can now be retrived in future with the 'load' button"));
 	}
-
 
 	/**
 	 * This method will check if the string can be cast to a valid integer.
@@ -183,7 +201,7 @@ public class FloorPlan extends JFrame {
 	public void saveFloorPlan() {
 		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
 		loadFile.save();
-		//  
+//		
 	}
 
 	/**
@@ -331,8 +349,7 @@ public class FloorPlan extends JFrame {
 	}
 
 	/**
-	 * This method will generate a floor plan from an arraylist of tables. Config options are:
-	 * 	1."ROUND TABLES" : generates the tables as circles
+	 * This method will generate a floor plan from an arraylist of tables.
 	 * 
 	 * @param ArrayList
 	 *                  <Table>
@@ -812,11 +829,11 @@ public class FloorPlan extends JFrame {
 						saveFloorPlan();
 						sidePnl.handleAll();
 						JOptionPane.showMessageDialog(null, infoLabel, "Layout saved",
-								JOptionPane.INFORMATION_MESSAGE);
+				                 JOptionPane.INFORMATION_MESSAGE);
 					} else if (sidePnl.saveAsButtonPending()) {
 						saveAsFloorPlan();
 						sidePnl.handleAll();
-
+						
 					} else if (sidePnl.loadButtonPending()) {
 						loadFloorPlan(false);
 						sidePnl.handleAll();
@@ -1003,9 +1020,9 @@ public class FloorPlan extends JFrame {
 									tableShapes.get(i).setY(currTable.getY());
 
 									tableShapes.get(selectedTableIdx)
-									.setX(tableShapes.get(selectedTableIdx).getX() + dx);
+											.setX(tableShapes.get(selectedTableIdx).getX() + dx);
 									tableShapes.get(selectedTableIdx)
-									.setY(tableShapes.get(selectedTableIdx).getY() + dy);
+											.setY(tableShapes.get(selectedTableIdx).getY() + dy);
 
 									for (int j = 0; j < tableShapes.size(); j++) {
 										tableShapes.get(j).setHighlighted(false);
