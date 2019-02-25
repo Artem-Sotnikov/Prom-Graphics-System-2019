@@ -92,27 +92,6 @@ public class FloorPlan extends JFrame {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
 		chooser.setFileFilter(filter);
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> parent of de85d34... u
-		currentSizeLabel = new JLabel();
-		  
-		  promptPanel = new JPanel();
-		  promptPanel.add(currentSizeLabel);
-		  promptPanel.add(new JLabel("Enter Max Width Size"));
-		  promptPanel.add(maxRightField);
-		  promptPanel.add(Box.createHorizontalStrut(15)); // a spacer
-		  promptPanel.add(new JLabel("Enter Max Height Size"));
-		  promptPanel.add(maxBottomField);
-		  
-		  sizeSet = false;
-
-<<<<<<< HEAD
->>>>>>> parent of de85d34... u
-=======
->>>>>>> parent of de85d34... u
 		currentSizeLabel = new JLabel();
 		  
 		  promptPanel = new JPanel();
@@ -127,34 +106,6 @@ public class FloorPlan extends JFrame {
 
 	}
 
-	/**
-	 * This method will check if the string can be cast to a valid integer
-	 */
-	
-	private boolean isInteger( String input ) {
-	     try {
-	         Integer.parseInt( input );
-	         return true;
-	     }
-	     catch( Exception e ) {
-	         return false;
-	     }
-	 }
-	
-	/**
-	 * This method will check if the string can be cast to a valid integer
-	 */
-	
-	private boolean isInteger( String input ) {
-	     try {
-	         Integer.parseInt( input );
-	         return true;
-	     }
-	     catch( Exception e ) {
-	         return false;
-	     }
-	 }
-	
 	/**
 	 * This method will check if the string can be cast to a valid integer
 	 */
@@ -283,177 +234,130 @@ public class FloorPlan extends JFrame {
 	 *               tables
 	 * @param String config
 	 */
-	public void generateFloorPlan(ArrayList<Table> tables, String config) {
-		if (config == "ROUND TABLES") {
-			int tableSize = tables.get(0).getSize();
-			int distToNextTable = tableSize * SCALE_FACTOR / 2 + SCALE_FACTOR * 2;
+	 public void generateFloorPlan(ArrayList<Table> tables, String config) {
+		  if (config == "ROUND TABLES") {
+		   int tableSize = tables.get(0).getSize(); 
+		   int distToNextTable = tableSize*SCALE_FACTOR/2 + SCALE_FACTOR*2;
 
-			this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size()))) * ((tableSize / 2) + 2) * SCALE_FACTOR + 200);
-			this.MAX_BOTTOM = this.MAX_RIGHT;
+		   if (!sizeSet) {
+		    this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size())))*((tableSize/2) + 2)*SCALE_FACTOR + 200);
+		    //System.out.println(MAX_RIGHT);
+		    this.MAX_BOTTOM = this.MAX_RIGHT;
+		   }
 
-			double determinedX = 0;
-			double determinedY = 0;
+		   double determinedX = 0;
+		   double determinedY = 0;
 
-			boolean offset = false;
+		   boolean offset = false;
 
-			for (int i = 0; i < tables.size(); i++) {
-				DispTable tableCreation = new DispTable();
+		   for (int i = 0; i < tables.size(); i++) {
+		    DispTable tableCreation = new DispTable();
 
-				tableCreation.setReal(true);
-				tableCreation.setRound(true);
-				tableCreation.setOriginalTable(tables.get(i));
+		    tableCreation.setReal(true);
+		    tableCreation.setRound(true);
+		    tableCreation.setOriginalTable(tables.get(i));
 
-				tableCreation.setHeight(tableSize * SCALE_FACTOR / 3);
-				tableCreation.setWidth(tableSize * SCALE_FACTOR / 3);
+		    tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
+		    tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
 
-				if (i == 0) {
-					determinedX = SCALE_FACTOR * 6;
-					determinedY = 100;
-				} else {
-					determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
-					determinedY = tableShapes.get(i - 1).getY();
+		    if (i == 0) {
+		     determinedX = SCALE_FACTOR*6;
+		     determinedY = 100;
+		    } else {
+		     determinedX = tableShapes.get(i - 1).getX() + distToNextTable;
+		     determinedY = tableShapes.get(i - 1).getY();
 
-					// System.out.println(determinedX);
+		     //System.out.println(determinedX);
 
-					if (determinedX >= (this.MAX_RIGHT - 2 * SCALE_FACTOR - tableSize * SCALE_FACTOR / 3)) {
-						determinedX = SCALE_FACTOR * 6 + distToNextTable * (Math.cos(60 * Math.PI / 180));
-						determinedY = determinedY + distToNextTable * (Math.sin(60 * Math.PI / 180));
+		     if (determinedX >= (this.MAX_RIGHT - 2*SCALE_FACTOR - tableSize*SCALE_FACTOR/3)) {
+		      determinedX = SCALE_FACTOR*6 + distToNextTable*(Math.cos(60*Math.PI/180));
+		      determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
 
-						if (offset) {
-							determinedX = SCALE_FACTOR * 6;
-							offset = false;
-						} else {
-							offset = true;
-						}
+		      if (offset) {
+		       determinedX = SCALE_FACTOR*6;
+		       offset = false;
+		      } else {
+		       offset = true;
+		      }
 
-					}
+		     }
 
-				}
+		    }
 
-				tableCreation.setX(determinedX);
-				tableCreation.setY(determinedY);
+		    tableCreation.setX(determinedX);
+		    tableCreation.setY(determinedY);
 
-				tableShapes.add(tableCreation);
+		    tableShapes.add(tableCreation);
 
-				double tableCenterX = determinedX + tableCreation.getHeight() / 2;
-				double tableCenterY = determinedY + tableCreation.getHeight() / 2;
+		    double tableCenterX = determinedX + tableCreation.getHeight()/2;
+		    double tableCenterY = determinedY + tableCreation.getHeight()/2;
 
-				for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
-					DispStudent studentCreation = new DispStudent();
 
-					studentCreation.setReal(true);
+		    for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
+		     DispStudent studentCreation = new DispStudent();
 
-					studentCreation.setRadius(SCALE_FACTOR - 2);
+		     studentCreation.setReal(true);
 
-					double currentAngle = j * 2 * Math.PI / tableSize;
-					// System.out.println(currentAngle);
+		     studentCreation.setRadius(SCALE_FACTOR - 2);
 
-					studentCreation.setX(tableCenterX + tableCreation.getHeight() * Math.cos(currentAngle) / 1.4
-							- studentCreation.getRadius() / 2);
-					studentCreation.setY(tableCenterY + tableCreation.getHeight() * Math.sin(currentAngle) / 1.4
-							- studentCreation.getRadius() / 2);
+		     double currentAngle = j*2*Math.PI/tableSize; 
+		     //System.out.println(currentAngle);
 
-					studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
-					studentShapes.add(studentCreation);
-				}
-			}
+		     studentCreation.setX(tableCenterX + tableCreation.getHeight()*Math.cos(currentAngle)/1.4 
+		       - studentCreation.getRadius()/2);
+		     studentCreation.setY(tableCenterY + tableCreation.getHeight()*Math.sin(currentAngle)/1.4
+		       - studentCreation.getRadius()/2);
 
-			boolean boardExhausted = false;
 
-			while (!boardExhausted) {
-				DispTable tableCreation = new DispTable();
+		     studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
+		     studentShapes.add(studentCreation);
+		    }
+		   }
 
-				tableCreation.setReal(false);
-				tableCreation.setRound(true);
+		   boolean boardExhausted = false;
 
-				tableCreation.setHeight(tableSize * SCALE_FACTOR / 3);
-				tableCreation.setWidth(tableSize * SCALE_FACTOR / 3);
+		   while (!boardExhausted) {   
 
-				determinedX = tableShapes.get(tableShapes.size() - 1).getX() + distToNextTable;
-				determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-				if (determinedX >= MAX_RIGHT - SCALE_FACTOR * 2 - tableSize * SCALE_FACTOR / 3) {
-					determinedX = SCALE_FACTOR * 6 + distToNextTable * (Math.cos(60 * Math.PI / 180));
-					determinedY = determinedY + distToNextTable * (Math.sin(60 * Math.PI / 180));
+		    DispTable tableCreation = new DispTable();
 
-					if (offset) {
-						determinedX = SCALE_FACTOR * 6;
-						offset = false;
-					} else {
-						offset = true;
-					}
-				}
-				if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR * 10 - tableSize * SCALE_FACTOR / 2)) {
-					determinedX = SCALE_FACTOR * 10 + distToNextTable * (Math.cos(60 * Math.PI / 180));
-					determinedY = determinedY + distToNextTable * (Math.sin(60 * Math.PI / 180));
+		    tableCreation.setReal(false);
+		    tableCreation.setRound(true);
 
-					if (offset) {
-						determinedX = SCALE_FACTOR * 10;
-						offset = false;
-					} else {
-						offset = true;
-					}
-				}
-				tableCreation.setX(determinedX);
-				tableCreation.setY(determinedY);
+		    tableCreation.setHeight(tableSize*SCALE_FACTOR/3);
+		    tableCreation.setWidth(tableSize*SCALE_FACTOR/3); 
 
-				// System.out.println(determinedY);
+		    determinedX = tableShapes.get(tableShapes.size() - 1).getX() + distToNextTable;
+		    determinedY = tableShapes.get(tableShapes.size() - 1).getY();
+		    if (determinedX >= MAX_RIGHT - SCALE_FACTOR*2 - tableSize*SCALE_FACTOR/3) {
+		     determinedX = SCALE_FACTOR*6 + distToNextTable*(Math.cos(60*Math.PI/180));
+		     determinedY = determinedY +  distToNextTable*(Math.sin(60*Math.PI/180));
 
-				if (determinedY > (MAX_BOTTOM - SCALE_FACTOR * 10)) {
-					boardExhausted = true;
-				} else {
-					tableShapes.add(tableCreation);
-				}
-			}
-		}
-	}
+		     if (offset) {
+		      determinedX = SCALE_FACTOR*6;
+		      offset = false;
+		     } else {
+		      offset = true;
+		     }
+		    }
+
+
+		    tableCreation.setX(determinedX);
+		    tableCreation.setY(determinedY);
+
+		    //System.out.println(determinedY);
+
+		    if (determinedY > (MAX_BOTTOM - SCALE_FACTOR*2 - SCALE_FACTOR*tableSize/3)) {
+		     boardExhausted = true;
+		    } else {
+		     tableShapes.add(tableCreation);
+		    }
+
+
+		   }
+		  }
+		 }
 	
 	private void regenerateFloorPlan(String config) {
-<<<<<<< HEAD
-=======
-		if (config == "round") {
-			ArrayList<Table> paramTables = new ArrayList<Table>(0);
-
-			for (int i = 0; i < tableShapes.size(); i++) {
-
-				// System.out.println(tableShapes.get(i).isReal());
-
-				if (tableShapes.get(i).isReal()) {
-					paramTables.add(tableShapes.get(i).getOriginalTable());
-				}
-			}
-
-			int tableSize = tableShapes.get(0).getOriginalTable().getSize();
-
-			this.tableShapes.clear();
-			this.studentShapes.clear();
-
-			this.generateFloorPlan(paramTables, "ROUND TABLES");
-
-			boolean messageShow = false;
-
-			for (int i = 0; i < tableShapes.size(); i++) {
-				if (tableShapes.get(i).isReal()) {
-					if (tableShapes.get(i).getY() > MAX_BOTTOM - tableSize * SCALE_FACTOR / 3 - SCALE_FACTOR * 2) {
-						messageShow = true;
-						MAX_BOTTOM = (int) (tableShapes.get(i).getY() + tableSize * SCALE_FACTOR / 3
-								+ SCALE_FACTOR * 2);
-					}
-				} else {
-					// System.out.println("false");
-				}
-			}
-
-			if (messageShow) {
-				JOptionPane.showMessageDialog(null, "your height was modified to fit all tables");
-			}
-		}
-	}
-	
-	private void regenerateFloorPlan(String config) {
-<<<<<<< HEAD
->>>>>>> parent of de85d34... u
-=======
->>>>>>> parent of de85d34... u
 		  if (config == "round") {
 		   ArrayList<Table> paramTables = new ArrayList<Table>(0);
 		   
