@@ -10,6 +10,8 @@ import java.util.ArrayList;
 public class SaveFile implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private int MAX_BOTTOM = 2000;
+	private int MAX_RIGHT = 2000;
 	private ArrayList<DispTable> tableList;
 	private ArrayList<DispStudent> studentList;
 
@@ -19,7 +21,9 @@ public class SaveFile implements Serializable {
 	 * @param tableList
 	 * @param studentList
 	 */
-	public SaveFile(ArrayList<DispTable> tableList, ArrayList<DispStudent> studentList) {
+	public SaveFile(int MAX_BOTTOM, int MAX_RIGHT, ArrayList<DispTable> tableList, ArrayList<DispStudent> studentList) {
+		this.MAX_BOTTOM = MAX_BOTTOM;
+		this.MAX_RIGHT = MAX_RIGHT;
 		this.tableList = tableList;
 		this.studentList = studentList;
 	}
@@ -39,6 +43,34 @@ public class SaveFile implements Serializable {
 			student.setHighlighted(false);
 			student.setSelected(false);
 		}
+	}
+
+	/**
+	 * @return the mAX_BOTTOM
+	 */
+	public int getMAX_BOTTOM() {
+		return MAX_BOTTOM;
+	}
+
+	/**
+	 * @param mAX_BOTTOM the mAX_BOTTOM to set
+	 */
+	public void setMAX_BOTTOM(int mAX_BOTTOM) {
+		MAX_BOTTOM = mAX_BOTTOM;
+	}
+
+	/**
+	 * @return the mAX_RIGHT
+	 */
+	public int getMAX_RIGHT() {
+		return MAX_RIGHT;
+	}
+
+	/**
+	 * @param mAX_RIGHT the mAX_RIGHT to set
+	 */
+	public void setMAX_RIGHT(int mAX_RIGHT) {
+		MAX_RIGHT = mAX_RIGHT;
 	}
 
 	/**

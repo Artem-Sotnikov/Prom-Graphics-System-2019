@@ -153,8 +153,8 @@ public class FloorPlan extends JFrame {
 									&& Integer.parseInt(maxRightField.getText()) > 400) {
 								this.sizeSet = true;
 								this.MAX_RIGHT = Integer.parseInt(maxRightField.getText());
-								this.MAX_BOTTOM = Integer.parseInt(maxRightField.getText());
-
+								this.MAX_BOTTOM = Integer.parseInt(maxBottomField.getText());
+								
 								this.regenerateFloorPlan("round");
 
 								disp.state = UIState.STATE_VIEWING;
@@ -181,7 +181,7 @@ public class FloorPlan extends JFrame {
 	 * This method will save a floor plan to a file.
 	 */
 	public void saveFloorPlan() {
-		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
+		loadFile.setSaveFile(new SaveFile(MAX_BOTTOM, MAX_RIGHT, tableShapes, studentShapes));
 		loadFile.save();
 		//  
 	}
@@ -194,7 +194,7 @@ public class FloorPlan extends JFrame {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			String fileName = chooser.getSelectedFile().getPath();
 			this.loadFile.setFileName(fileName);
-			this.loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
+			this.loadFile.setSaveFile(new SaveFile(MAX_BOTTOM, MAX_RIGHT, tableShapes, studentShapes));
 			loadFile.save();
 		}
 	}
@@ -211,6 +211,8 @@ public class FloorPlan extends JFrame {
 		chooseFile(initial);
 		loadFile.load();
 		SaveFile saveFile = loadFile.getSaveFile();
+		MAX_BOTTOM = saveFile.getMAX_BOTTOM();
+		MAX_RIGHT = saveFile.getMAX_RIGHT();
 		tableShapes = saveFile.getTableList();
 		studentShapes = saveFile.getStudentList();
 	}
