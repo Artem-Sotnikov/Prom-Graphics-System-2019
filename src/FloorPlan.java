@@ -48,13 +48,6 @@ public class FloorPlan extends JFrame {
 	private DispTable selectedTable;
 	private int selectedTableIdx;
 
-	private JPanel promptPanel;
-	private JTextField maxRightField = new JTextField(5);
-	private JTextField maxBottomField = new JTextField(5);
-
-	private boolean sizeSet;
-	private JLabel currentSizeLabel;
-
 	private JFileChooser chooser;
 	
 	private JPanel promptPanel;
@@ -111,32 +104,6 @@ public class FloorPlan extends JFrame {
 		  
 		  sizeSet = false;
 
-		currentSizeLabel = new JLabel();
-
-		promptPanel = new JPanel();
-		promptPanel.add(currentSizeLabel);
-		promptPanel.add(new JLabel("Enter Max Width Size"));
-		promptPanel.add(maxRightField);
-		promptPanel.add(Box.createHorizontalStrut(15)); // a spacer
-		promptPanel.add(new JLabel("Enter Max Height Size"));
-		promptPanel.add(maxBottomField);
-
-		sizeSet = false;
-	}
-
-	/**
-	 * This method will return true if input is an integer.
-	 * 
-	 * @param String input
-	 * @return boolean
-	 */
-	private boolean isInteger(String input) {
-		try {
-			Integer.parseInt(input);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
 	}
 
 	/**
@@ -157,48 +124,53 @@ public class FloorPlan extends JFrame {
 	 * This method will display the floor plan using repaint.
 	 */
 	public void displayFloorPlan() {
-		this.setVisible(true);
 
-		while (true) {
-			this.disp.repaint();
-			this.sidePnl.repaint();
+		  this.setVisible(true);
 
-			boolean flag = false;
-
-			if (disp.state == UIState.STATE_RESIZING) {
-				do {
-					currentSizeLabel.setText("Current Dimensions Are: " + Integer.toString(MAX_RIGHT) + " by "
-							+ Integer.toString(MAX_BOTTOM) + "\n");
-					int result = JOptionPane.showConfirmDialog(null, promptPanel, "Please Enter Room Size",
-							JOptionPane.OK_CANCEL_OPTION);
-					if (result == JOptionPane.OK_OPTION) {
-						if ((isInteger(maxRightField.getText())) && (isInteger(maxBottomField.getText()))) {
-							if (Integer.parseInt(maxRightField.getText()) > 400
-									&& Integer.parseInt(maxRightField.getText()) > 400) {
-								this.sizeSet = true;
-								this.MAX_RIGHT = Integer.parseInt(maxRightField.getText());
-								this.MAX_BOTTOM = Integer.parseInt(maxRightField.getText());
-
-								this.regenerateFloorPlan("round");
-
-								disp.state = UIState.STATE_VIEWING;
-								flag = false;
-							} else {
-								JOptionPane.showMessageDialog(null, "Please enter a room size big enough");
-								flag = true;
-							}
-						} else {
-							JOptionPane.showMessageDialog(null, "Please enter valid integers");
-							flag = true;
-						}
-					} else {
-						disp.state = UIState.STATE_VIEWING;
-						flag = false;
-					}
-				} while (flag);
-			}
-		}
-	}
+		  while (true) {  
+		   
+		   this.disp.repaint();
+		   this.sidePnl.repaint();
+		   
+		   
+		   
+		   boolean flag = false;
+		   
+		   if (disp.state == UIState.STATE_RESIZING) {
+		    do {
+		     currentSizeLabel.setText("Current Dimensions Are: " + Integer.toString(MAX_RIGHT)  + " by " + Integer.toString(MAX_BOTTOM) 
+		      + "\n");
+		     int result = JOptionPane.showConfirmDialog(null, promptPanel, 
+		                "Please Enter Room Size", JOptionPane.OK_CANCEL_OPTION);
+		     if (result == JOptionPane.OK_OPTION) {
+		        if ((isInteger(maxRightField.getText()))&&(isInteger(maxBottomField.getText()))) {
+		         if (Integer.parseInt(maxRightField.getText()) > 400 && Integer.parseInt(maxRightField.getText()) > 400) {
+		          this.sizeSet = true;
+		          this.MAX_RIGHT = Integer.parseInt(maxRightField.getText());
+		          this.MAX_BOTTOM = Integer.parseInt(maxRightField.getText());
+		          
+		          this.regenerateFloorPlan("round");
+		          
+		          disp.state = UIState.STATE_VIEWING;
+		         flag = false;
+		         } else {
+		          JOptionPane.showMessageDialog(null,"Please enter a room size big enough");
+		          flag = true;  
+		         }
+		        } else {
+		         JOptionPane.showMessageDialog(null,"Please enter valid integers");
+		         flag = true;
+		        }
+		        } else {
+		         disp.state = UIState.STATE_VIEWING;
+		         flag = false;
+		        }
+		    } while (flag);
+		   }
+		   
+		   
+		  }  
+		 }
 
 	/**
 	 * This method will save a floor plan to a file.
@@ -255,125 +227,20 @@ public class FloorPlan extends JFrame {
 	}
 
 	/**
-	 * This method will generate a floor plan from an ArrayList
-	 * <Table>
-	 * of tables.
-	 * 
-	 * @param ArrayList
-	 *                  <Table>
-	 *                  tables
-	 */
-	public void generateFloorPlan(ArrayList<Table> tables) {
-
-		int tableSize = tables.get(0).getSize();
-
-		if (!sizeSet) {
-			this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size()))) * ((tableSize / 2) + 2) * SCALE_FACTOR + 200);
-			// System.out.println(MAX_RIGHT);
-			this.MAX_BOTTOM = this.MAX_RIGHT;
-		}
-
-		double determinedX = 0;
-		double determinedY = 0;
-
-		for (int i = 0; i < tables.size(); i++) {
-			DispTable tableCreation = new DispTable();
-
-			tableCreation.setReal(true);
-			tableCreation.setOriginalTable(tables.get(i));
-
-			tableCreation.setHeight(2 * SCALE_FACTOR);
-			tableCreation.setWidth(tableSize * SCALE_FACTOR / 2);
-
-			if (i == 0) {
-				determinedX = SCALE_FACTOR * 10;
-				determinedY = 100;
-			} else {
-				determinedX = tableShapes.get(i - 1).getX() + tableSize * SCALE_FACTOR / 2 + SCALE_FACTOR * 2;
-				determinedY = tableShapes.get(i - 1).getY();
-				// System.out.println(determinedX);
-				if (determinedX >= (this.MAX_RIGHT - tableSize * SCALE_FACTOR / 2)) {
-					determinedX = SCALE_FACTOR * 10;
-					determinedY = determinedY + SCALE_FACTOR * 6;
-				}
-			}
-
-			tableCreation.setX(determinedX);
-			tableCreation.setY(determinedY);
-
-			tableShapes.add(tableCreation);
-
-			for (int j = 0; j < tables.get(i).getStudents().size(); j++) {
-				DispStudent studentCreation = new DispStudent();
-
-				studentCreation.setReal(true);
-
-				studentCreation.setRadius(SCALE_FACTOR - 2);
-
-				if (j < (tableSize / 2)) {
-					studentCreation.setX(determinedX + SCALE_FACTOR * j);
-					studentCreation.setY(determinedY - SCALE_FACTOR - OFFSET_FACTOR);
-				} else {
-					studentCreation.setX(determinedX + SCALE_FACTOR * (j - (tableSize / 2)));
-					studentCreation.setY(determinedY + SCALE_FACTOR * 2 + OFFSET_FACTOR);
-				}
-
-				studentCreation.setOriginalStudent(tables.get(i).getStudents().get(j));
-				studentShapes.add(studentCreation);
-			}
-		}
-
-		boolean boardExhausted = false;
-
-		while (!boardExhausted) {
-
-			DispTable tableCreation = new DispTable();
-
-			tableCreation.setReal(false);
-
-			tableCreation.setHeight(2 * SCALE_FACTOR);
-			tableCreation.setWidth(tableSize * SCALE_FACTOR / 2);
-
-			determinedX = tableShapes.get(tableShapes.size() - 1).getX() + tableSize * SCALE_FACTOR / 2
-					+ SCALE_FACTOR * 2;
-			determinedY = tableShapes.get(tableShapes.size() - 1).getY();
-			if (determinedX >= MAX_RIGHT - tableSize * SCALE_FACTOR / 2) {
-				determinedX = SCALE_FACTOR * 10;
-				determinedY = determinedY + SCALE_FACTOR * 6;
-			}
-
-			tableCreation.setX(determinedX);
-			tableCreation.setY(determinedY);
-
-			// System.out.println(determinedY);
-
-			if (determinedY > (MAX_BOTTOM - SCALE_FACTOR * 10)) {
-				boardExhausted = true;
-			} else {
-				tableShapes.add(tableCreation);
-			}
-		}
-	}
-
-	/**
 	 * This method will generate a floor plan from an arraylist of tables.
 	 * 
-	 * @param ArrayList
-	 *                  <Table>
-	 *                  tables
-	 * @param String    config
+	 * @param        ArrayList
+	 *               <Table>
+	 *               tables
+	 * @param String config
 	 */
 	public void generateFloorPlan(ArrayList<Table> tables, String config) {
 		if (config == "ROUND TABLES") {
 			int tableSize = tables.get(0).getSize();
 			int distToNextTable = tableSize * SCALE_FACTOR / 2 + SCALE_FACTOR * 2;
 
-			if (!sizeSet) {
-				this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size()))) * ((tableSize / 2) + 2) * SCALE_FACTOR
-						+ 200);
-				// System.out.println(MAX_RIGHT);
-				this.MAX_BOTTOM = this.MAX_RIGHT;
-			}
+			this.MAX_RIGHT = (int) ((Math.ceil(Math.sqrt(tables.size()))) * ((tableSize / 2) + 2) * SCALE_FACTOR + 200);
+			this.MAX_BOTTOM = this.MAX_RIGHT;
 
 			double determinedX = 0;
 			double determinedY = 0;
@@ -445,7 +312,6 @@ public class FloorPlan extends JFrame {
 			boolean boardExhausted = false;
 
 			while (!boardExhausted) {
-
 				DispTable tableCreation = new DispTable();
 
 				tableCreation.setReal(false);
@@ -467,63 +333,27 @@ public class FloorPlan extends JFrame {
 						offset = true;
 					}
 				}
+				if (determinedX > (this.MAX_RIGHT - SCALE_FACTOR * 10 - tableSize * SCALE_FACTOR / 2)) {
+					determinedX = SCALE_FACTOR * 10 + distToNextTable * (Math.cos(60 * Math.PI / 180));
+					determinedY = determinedY + distToNextTable * (Math.sin(60 * Math.PI / 180));
 
+					if (offset) {
+						determinedX = SCALE_FACTOR * 10;
+						offset = false;
+					} else {
+						offset = true;
+					}
+				}
 				tableCreation.setX(determinedX);
 				tableCreation.setY(determinedY);
 
 				// System.out.println(determinedY);
 
-				if (determinedY > (MAX_BOTTOM - SCALE_FACTOR * 2 - SCALE_FACTOR * tableSize / 3)) {
+				if (determinedY > (MAX_BOTTOM - SCALE_FACTOR * 10)) {
 					boardExhausted = true;
 				} else {
 					tableShapes.add(tableCreation);
 				}
-
-			}
-		}
-	}
-
-	/**
-	 * This method will regenerate a floor plan.
-	 * 
-	 * @param String config
-	 */
-	private void regenerateFloorPlan(String config) {
-		if (config == "round") {
-			ArrayList<Table> paramTables = new ArrayList<Table>(0);
-
-			for (int i = 0; i < tableShapes.size(); i++) {
-
-				// System.out.println(tableShapes.get(i).isReal());
-
-				if (tableShapes.get(i).isReal()) {
-					paramTables.add(tableShapes.get(i).getOriginalTable());
-				}
-			}
-
-			int tableSize = tableShapes.get(0).getOriginalTable().getSize();
-
-			this.tableShapes.clear();
-			this.studentShapes.clear();
-
-			this.generateFloorPlan(paramTables, "ROUND TABLES");
-
-			boolean messageShow = false;
-
-			for (int i = 0; i < tableShapes.size(); i++) {
-				if (tableShapes.get(i).isReal()) {
-					if (tableShapes.get(i).getY() > MAX_BOTTOM - tableSize * SCALE_FACTOR / 3 - SCALE_FACTOR * 2) {
-						messageShow = true;
-						MAX_BOTTOM = (int) (tableShapes.get(i).getY() + tableSize * SCALE_FACTOR / 3
-								+ SCALE_FACTOR * 2);
-					}
-				} else {
-					// System.out.println("false");
-				}
-			}
-
-			if (messageShow) {
-				JOptionPane.showMessageDialog(null, "your height was modified to fit all tables");
 			}
 		}
 	}
@@ -884,8 +714,8 @@ public class FloorPlan extends JFrame {
 
 					if (sidePnl.resizeButtonPending()) {
 						if (this.state == UIState.STATE_VIEWING) {
-							this.state = UIState.STATE_RESIZING;
-						}
+						       this.state = UIState.STATE_RESIZING;
+						     }
 					}
 
 					if (this.state == UIState.STATE_RESIZING) {
