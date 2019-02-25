@@ -229,10 +229,10 @@ public class FloorPlan extends JFrame {
 	/**
 	 * This method will generate a floor plan from an arraylist of tables.
 	 * 
-	 * @param        ArrayList
-	 *               <Table>
-	 *               tables
-	 * @param String config
+	 * @param ArrayList
+	 *                  <Table>
+	 *                  tables
+	 * @param String    config
 	 */
 	public void generateFloorPlan(ArrayList<Table> tables, String config) {
 		if (config == "ROUND TABLES") {

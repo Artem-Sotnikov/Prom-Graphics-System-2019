@@ -68,15 +68,10 @@ public class TestMain {
 		// SeatingAlg mockSeatingAlg = new SeatingAlg();
 		// ArrayList<Table> tables = mockSeatingAlg.generateTables(mockStudents, 7);
 
-		// either load from existing file OR generate from list of tables (MAIN TESTING
-		// CODE)
 		// ((FloorPlan) window).loadFloorPlan(true);
 		((FloorPlan) window).generateFloorPlan(testTables, "ROUND TABLES");
-		// ((FloorPlan) window).generateFloorPlan(testTables);
 
-		// while (true) {
 		((FloorPlan) window).displayFloorPlan();
-		// }
 	}
 
 	/**
