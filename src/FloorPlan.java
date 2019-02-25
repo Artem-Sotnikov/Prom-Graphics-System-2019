@@ -44,7 +44,7 @@ public class FloorPlan extends JFrame {
 	private DispTable focusedTable;
 
 	private DispStudent selectedStudent;
-	private int selectedStudentIdx;
+
 	private DispTable selectedTable;
 	private int selectedTableIdx;
 
@@ -56,6 +56,7 @@ public class FloorPlan extends JFrame {
 	 
 	 private boolean sizeSet;
 	 private JLabel currentSizeLabel;
+	 private JPanel infoLabel;
 
 	private LoadFile loadFile = new LoadFile("src/savefiles/default.txt");
 
@@ -103,6 +104,9 @@ public class FloorPlan extends JFrame {
 		  promptPanel.add(maxBottomField);
 		  
 		  sizeSet = false;
+		  
+		  infoLabel = new JPanel();
+		  infoLabel.add(new JLabel("Your layout has been sucessfully saved to file, and can now be retrived in future with the 'load' button"));
 
 	}
 
@@ -178,6 +182,7 @@ public class FloorPlan extends JFrame {
 	public void saveFloorPlan() {
 		loadFile.setSaveFile(new SaveFile(tableShapes, studentShapes));
 		loadFile.save();
+//		
 	}
 
 	/**
@@ -703,9 +708,12 @@ public class FloorPlan extends JFrame {
 					if (sidePnl.saveButtonPending()) {
 						saveFloorPlan();
 						sidePnl.handleAll();
+						JOptionPane.showMessageDialog(null, infoLabel, "Layout saved",
+				                 JOptionPane.INFORMATION_MESSAGE);
 					} else if (sidePnl.saveAsButtonPending()) {
 						saveAsFloorPlan();
 						sidePnl.handleAll();
+						
 					} else if (sidePnl.loadButtonPending()) {
 						loadFloorPlan(false);
 						sidePnl.handleAll();
@@ -731,7 +739,6 @@ public class FloorPlan extends JFrame {
 
 								studentShapes.get(i).setSelected(true);
 								selectedStudent = studentShapes.get(i);
-								selectedStudentIdx = i;
 
 							}
 						}
