@@ -73,7 +73,7 @@ public class DispStudent extends DispCircle implements Serializable {
 
 	/**
 	 * This method will draw a box.
-	 * @param Graphics g
+	 * @param g the graphics
 	 */
 	public void drawBox(Graphics g) {
 		if (this.isReal()) {

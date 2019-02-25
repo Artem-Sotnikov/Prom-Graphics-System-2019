@@ -15,7 +15,7 @@ public class Table implements Serializable {
 	/**
 	 * Class constructor with parameter.
 	 * 
-	 * @param initSize
+	 * @param initSize the initial size
 	 */
 	public Table(int initSize) {
 		size = initSize;
@@ -51,7 +51,7 @@ public class Table implements Serializable {
 	}
 
 	/**
-	 * @param ArrayList<Student> newStudents
+	 * @param newStudents the arraylist of students
 	 */
 	public void setStudents(ArrayList<Student> newStudents) {
 		students = newStudents;

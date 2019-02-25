@@ -18,6 +18,8 @@ public class SaveFile implements Serializable {
 	/**
 	 * Class constructor with parameters.
 	 * 
+	 * @param MAX_BOTTOM the max bottom
+	 * @param MAX_RIGHT the max right
 	 * @param tableList the table list
 	 * @param studentList the student list
 	 */
