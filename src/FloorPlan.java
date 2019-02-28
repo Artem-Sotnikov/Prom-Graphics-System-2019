@@ -152,15 +152,8 @@ public class FloorPlan extends JFrame {
 			
 			//disp.paint(null);
 			
-			SwingUtilities.invokeLater(new Runnable() {
-			    public void run() {
-			    	disp.repaint();
-					sidePnl.repaint();
-			    }});
-			
 			this.disp.repaint();
 			this.sidePnl.repaint();
-			System.out.println("Repainting");
 			//Thread.sleep(10000);
 
 			boolean flag = false;

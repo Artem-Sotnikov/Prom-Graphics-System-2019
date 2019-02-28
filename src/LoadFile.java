@@ -35,7 +35,7 @@ public class LoadFile {
 			f.close();
 		} catch (Exception e) {
 			System.out.println("Error loading file.");
-			System.exit(0);
+			e.printStackTrace();
 		}
 	}
 
@@ -52,7 +52,7 @@ public class LoadFile {
 			f.close();
 		} catch (Exception e) {
 			System.out.println("Error saving file.");
-			System.exit(0);
+			e.printStackTrace();
 		}
 	}
 
