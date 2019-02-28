@@ -20,13 +20,14 @@ public class TestMain {
 	 * Main method.
 	 * 
 	 * @param args the main method
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		window = new FloorPlan();
 
 		ArrayList<Table> testTables = new ArrayList<Table>();
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 1; i++) {
 			testTables.add(new Table());
 		}
 
