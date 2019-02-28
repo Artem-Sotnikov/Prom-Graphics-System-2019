@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -81,7 +80,7 @@ public class FloorPlan extends JFrame {
 		this.add(sidePnl, BorderLayout.WEST);
 		this.setSize((int) SCREEN_SIZE.getWidth(), (int) SCREEN_SIZE.getHeight());
 
-		this.requestFocusInWindow();
+		// this.requestFocusInWindow();
 
 		this.tableShapes = new ArrayList<DispTable>(0);
 		this.studentShapes = new ArrayList<DispStudent>(0);
@@ -110,11 +109,6 @@ public class FloorPlan extends JFrame {
 
 		infoLabel = new JPanel();
 		infoLabel.add(new JLabel("Your layout has been sucessfully saved to file, and can now be retrived in future with the 'load' button"));
-		
-		this.disp.setOpaque(true);
-		this.sidePnl.setOpaque(true);
-		
-		System.out.println("opaque");
 	}
 
 
@@ -133,35 +127,17 @@ public class FloorPlan extends JFrame {
 		}
 	}
 
-	private void renderLoop() {
-		
+	/**
+	 * This method will display the floor plan using repaint.
+	 */
+	public void displayFloorPlan() {
+
+		this.setVisible(true);
+
 		while (true) {
-			
-			
-			//validate();
-			//invalidate();
-			
-			
-//			Thread.sleep(10000);
-			
-//			disp.repaint();
-//			sidePnl.repaint();		
-						
-//			System.out.println("sleeping");
-//			Thread.sleep(10000);
-			
-			//disp.paint(null);
-			
-			SwingUtilities.invokeLater(new Runnable() {
-			    public void run() {
-			    	disp.repaint();
-					sidePnl.repaint();
-			    }});
-			
+
 			this.disp.repaint();
 			this.sidePnl.repaint();
-			System.out.println("Repainting");
-			//Thread.sleep(10000);
 
 			boolean flag = false;
 
@@ -199,19 +175,6 @@ public class FloorPlan extends JFrame {
 			}
 
 		}
-	}
-	
-	/**
-	 * This method will display the floor plan using repaint.
-	 * @throws Exception 
-	 */
-	public void displayFloorPlan() throws Exception {
-
-		this.setVisible(true);		
-		
-		new Thread(this::renderLoop).start();
-		
-		
 	}
 
 	/**
